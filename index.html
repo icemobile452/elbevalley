@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ElbeValley – Die Region kommt zusammen.</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<style>
+  :root{
+    --green:#2E7D32; --green2:#66BB6A; --green-soft:#E8F3E9;
+    --bg:#F7F8FA; --card:#FFFFFF; --ink:#1A2A1B; --muted:#6B7A6C;
+    --line:#E7ECE8; --shadow:0 2px 12px rgba(30,60,32,.06);
+    --shadow-lg:0 8px 30px rgba(30,60,32,.12);
+    --radius:20px; --radius-sm:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{font-family:'Inter',sans-serif;background:#dfe3e6;color:var(--ink);overscroll-behavior:none}
+  .ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased}
+  #app{max-width:440px;margin:0 auto;height:100dvh;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(0,0,0,.15)}
+  .screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:none;flex-direction:column;padding-bottom:20px}
+  .screen.active{display:flex;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hdr{position:sticky;top:0;z-index:20;background:rgba(247,248,250,.85);backdrop-filter:blur(16px);padding:14px 18px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .hdr h1{font-size:22px;font-weight:800;letter-spacing:-.5px}
+  .hdr .sub{font-size:12px;color:var(--muted);font-weight:500;margin-top:1px}
+  .hdr-actions{display:flex;gap:8px}
+  .iconbtn{width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;cursor:pointer;color:var(--ink);transition:.2s;position:relative}
+  .iconbtn:active{transform:scale(.92)}
+  .iconbtn .ms{font-size:22px}
+  .badge-dot{position:absolute;top:8px;right:9px;width:9px;height:9px;background:#E53935;border-radius:50%;border:2px solid var(--card);display:none}
+  .nav{display:flex;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:30}
+  .nav button{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;cursor:pointer;color:var(--muted);font-family:inherit;transition:.2s}
+  .nav button .ms{font-size:26px;transition:.2s}
+  .nav button span.lbl{font-size:10px;font-weight:600}
+  .nav button.on{color:var(--green)}
+  .nav button.on .ms{font-variation-settings:'FILL' 1;transform:translateY(-1px)}
+  #map{width:100%;flex:1;min-height:300px;z-index:1}
+  .map-wrap{flex:1;position:relative;display:flex;flex-direction:column}
+  .map-search{position:absolute;top:12px;left:12px;right:12px;z-index:10;display:flex;gap:8px}
+  .map-search input{flex:1;border:none;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-radius:14px;padding:13px 16px;font-family:inherit;font-size:14px;box-shadow:var(--shadow-lg);outline:none}
+  .filterbtn{background:var(--green);color:#fff;border:none;border-radius:14px;padding:0 16px;display:flex;align-items:center;gap:6px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;box-shadow:var(--shadow-lg)}
+  .chips{position:absolute;top:64px;left:0;right:0;z-index:10;display:flex;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;gap:5px;transition:.2s}
+  .chip.on{background:var(--green);color:#fff;border-color:var(--green)}
+  .chip .ms{font-size:16px}
+  .fab{position:absolute;right:16px;bottom:24px;z-index:10;width:60px;height:60px;border-radius:50%;background:var(--green);color:#fff;border:none;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 20px rgba(46,125,50,.4);transition:.2s}
+  .fab:active{transform:scale(.9)}
+  .fab .ms{font-size:30px}
+  .pin-ico{width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:grid;place-items:center;box-shadow:0 3px 8px rgba(0,0,0,.3);border:2.5px solid #fff}
+  .pin-ico .ms{transform:rotate(45deg);font-size:19px;color:#fff}
+  .pad{padding:16px 18px}
+  .sec-title{font-size:17px;font-weight:700;margin:18px 18px 10px;display:flex;align-items:center;justify-content:space-between}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;animation:pop .3s ease}
+  .post{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:15px 16px;margin:0 18px 12px}
+  .post-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:16px;flex-shrink:0}
+  .post-name{font-weight:700;font-size:14px;display:flex;align-items:center;gap:5px}
+  .post-meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px}
+  .post-cat{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--green-soft);color:var(--green)}
+  .acct-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;background:#EEF2FF;color:#3949AB;display:inline-flex;align-items:center;gap:3px;vertical-align:middle}
+  .post-body{font-size:14.5px;line-height:1.55;margin-bottom:12px}
+  .post-img{width:100%;height:180px;border-radius:var(--radius-sm);object-fit:cover;margin-bottom:12px;background:linear-gradient(135deg,var(--green2),var(--green))}
+  .post-actions{display:flex;gap:22px;color:var(--muted);font-size:13px;font-weight:600}
+  .post-actions button{background:none;border:none;display:flex;align-items:center;gap:6px;color:inherit;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+  .post-actions button:active{transform:scale(.9)}
+  .post-actions button.liked{color:#E53935}
+  .post-actions button.liked .ms{font-variation-settings:'FILL' 1}
+  .rec-card{margin:0 18px 14px;position:relative}
+  .rec-img{width:100%;height:170px;border-radius:var(--radius);object-fit:cover}
+  .rec-info{padding:12px 4px 4px}
+  .rec-title{font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:space-between}
+  .rec-rating{font-size:13px;font-weight:600;color:var(--green);display:flex;align-items:center;gap:3px;background:var(--green-soft);padding:3px 9px;border-radius:20px}
+  .rec-desc{font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.5}
+  .rec-foot{display:flex;align-items:center;gap:14px;margin-top:10px;font-size:12.5px;color:var(--muted);font-weight:500}
+  .rec-foot span{display:flex;align-items:center;gap:4px}
+  .rec-badge{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:700;box-shadow:var(--shadow)}
+  .seg{display:flex;gap:6px;margin:14px 18px;background:var(--green-soft);padding:5px;border-radius:14px}
+  .seg button{flex:1;border:none;background:none;padding:9px;border-radius:10px;font-family:inherit;font-weight:600;font-size:13px;color:var(--green);cursor:pointer;transition:.2s}
+  .seg button.on{background:#fff;box-shadow:var(--shadow);color:var(--ink)}
+  .issue{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:15px 16px;margin:0 18px 12px}
+  .issue-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+  .issue-title{font-weight:700;font-size:15px}
+  .status{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+  .st-neu{background:#FFF3E0;color:#E67E00}
+  .st-prog{background:#E3F2FD;color:#1565C0}
+  .st-done{background:var(--green-soft);color:var(--green)}
+  .issue-desc{font-size:13.5px;color:var(--muted);line-height:1.5;margin-bottom:10px}
+  .issue-meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px;margin-bottom:12px}
+  .vote{display:flex;gap:10px;align-items:center}
+  .vote button{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:7px 14px;display:flex;align-items:center;gap:6px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;color:var(--ink);transition:.15s}
+  .vote button:active{transform:scale(.92)}
+  .vote button.up.on{background:var(--green-soft);border-color:var(--green2);color:var(--green)}
+  .vote button.down.on{background:#FFEBEE;border-color:#EF9A9A;color:#C62828}
+  .official{background:linear-gradient(135deg,#fff,#F5FAF5);border-left:4px solid var(--green);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;margin:0 18px 12px}
+  .official-tag{font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:5px;margin-bottom:6px}
+  .prof-head{background:linear-gradient(160deg,var(--green),var(--green2));padding:34px 18px 28px;color:#fff;position:relative}
+  .prof-avatar{width:84px;height:84px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:34px;font-weight:800;color:var(--green);margin-bottom:12px;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+  .prof-name{font-size:24px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .verified{font-size:11px;background:rgba(255,255,255,.25);padding:4px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;font-weight:600}
+  .prof-loc{font-size:14px;opacity:.92;display:flex;align-items:center;gap:5px;margin-top:3px}
+  .prof-stats{display:flex;gap:8px;margin:16px 18px}
+  .stat{flex:1;background:var(--card);border-radius:var(--radius-sm);box-shadow:var(--shadow);padding:14px 10px;text-align:center}
+  .stat b{font-size:22px;font-weight:800;color:var(--green);display:block}
+  .stat span{font-size:11px;color:var(--muted);font-weight:600}
+  .interests{display:flex;flex-wrap:wrap;gap:8px;margin:4px 18px 8px}
+  .int-chip{background:var(--green-soft);color:var(--green);font-size:13px;font-weight:600;padding:7px 13px;border-radius:20px}
+  .menu-item{background:var(--card);margin:0 18px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;border-bottom:1px solid var(--line);transition:.15s}
+  .menu-item:active{background:var(--green-soft)}
+  .menu-item:first-of-type{border-radius:var(--radius) var(--radius) 0 0}
+  .menu-item:last-of-type{border-radius:0 0 var(--radius) var(--radius);border-bottom:none}
+  .menu-item .ms:first-child{color:var(--green);font-size:24px}
+  .menu-item .txt{flex:1;font-weight:600;font-size:15px}
+  .menu-item .ms:last-child{color:var(--muted)}
+  .overlay{position:fixed;inset:0;background:rgba(20,30,20,.5);z-index:100;display:none;align-items:flex-end;justify-content:center}
+  .overlay.show{display:flex;animation:fade .25s}
+  #app .overlay{position:absolute}
+  .sheet{background:var(--card);width:100%;max-width:440px;border-radius:26px 26px 0 0;max-height:92%;overflow-y:auto;animation:slideUp .35s cubic-bezier(.16,1,.3,1);padding-bottom:24px}
+  .sheet-handle{width:40px;height:5px;background:var(--line);border-radius:3px;margin:12px auto 4px}
+  .sheet-hero{height:190px;background:linear-gradient(135deg,var(--green2),var(--green));position:relative;display:grid;place-items:center;color:#fff}
+  .sheet-hero .ms{font-size:60px;opacity:.9}
+  .sheet-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border:none;display:grid;place-items:center;cursor:pointer;z-index:5}
+  .sheet-body{padding:18px}
+  .sheet-cat{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;margin-bottom:10px}
+  .sheet-title{font-size:23px;font-weight:800;line-height:1.2;margin-bottom:6px}
+  .sheet-host{display:flex;align-items:center;gap:10px;margin:14px 0;padding:12px;background:var(--bg);border-radius:var(--radius-sm)}
+  .detail-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+  .detail-row .ms{color:var(--green);font-size:22px}
+  .detail-row.locked{color:var(--muted);opacity:.7}
+  .btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:16px;padding:16px;font-family:inherit;font-weight:700;font-size:16px;cursor:pointer;margin-top:18px;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.6;pointer-events:none}
+  .btn.pending{background:#FFF3E0;color:#E67E00;pointer-events:none}
+  .btn.ok{background:var(--green-soft);color:var(--green);pointer-events:none}
+  .btn.secondary{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px;color:var(--ink)}
+  .field input,.field textarea,.field select{width:100%;border:1.5px solid var(--line);background:var(--bg);border-radius:14px;padding:13px 15px;font-family:inherit;font-size:15px;outline:none;transition:.2s;color:var(--ink)}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--green2);background:#fff}
+  .field textarea{resize:none;min-height:88px}
+  .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .cat-opt{border:1.5px solid var(--line);background:var(--bg);border-radius:14px;padding:12px 6px;text-align:center;cursor:pointer;transition:.15s;font-size:11.5px;font-weight:600}
+  .cat-opt .ms{display:block;font-size:24px;margin-bottom:4px}
+  .cat-opt.on{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+  .row2{display:flex;gap:10px}
+  .row2>.field{flex:1}
+  .imgdrop{border:2px dashed var(--line);border-radius:14px;padding:24px;text-align:center;color:var(--muted);cursor:pointer;transition:.2s}
+  .imgdrop:active{border-color:var(--green2);background:var(--green-soft)}
+  .chat-msgs{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:78%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.4}
+  .msg.them{background:var(--bg);align-self:flex-start;border-bottom-left-radius:5px}
+  .msg.me{background:var(--green);color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
+  .msg .who{font-size:11px;font-weight:700;color:var(--green);margin-bottom:2px}
+  .msg .time{font-size:10px;opacity:.6;margin-top:3px;text-align:right}
+  .chat-input{position:sticky;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px 14px;display:flex;gap:10px;align-items:center}
+  .chat-input input{flex:1;border:none;background:var(--bg);border-radius:22px;padding:12px 16px;font-family:inherit;font-size:14px;outline:none}
+  .chat-send{width:44px;height:44px;border-radius:50%;background:var(--green);color:#fff;border:none;display:grid;place-items:center;cursor:pointer;flex-shrink:0}
+  .notif{display:flex;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);align-items:flex-start}
+  .notif-ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;color:#fff}
+  .notif-txt{flex:1;font-size:14px;line-height:1.4}
+  .notif-time{font-size:11px;color:var(--muted);margin-top:3px}
+  .notif.unread{background:var(--green-soft)}
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:13px 22px;border-radius:30px;font-size:14px;font-weight:600;z-index:200;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:.3s;max-width:90%}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #app .toast{position:absolute}
+  .login{position:absolute;inset:0;z-index:50;background:linear-gradient(165deg,var(--green) 0%,#1B5E20 60%,#0D3B10 100%);display:flex;flex-direction:column;justify-content:center;padding:40px 30px;color:#fff;overflow-y:auto}
+  .login.hide{display:none}
+  .logo-badge{width:76px;height:76px;border-radius:22px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);display:grid;place-items:center;margin-bottom:22px;border:1px solid rgba(255,255,255,.2)}
+  .logo-badge .ms{font-size:42px;color:#fff}
+  .login h1{font-size:38px;font-weight:800;letter-spacing:-1px;line-height:1.05}
+  .login .slogan{font-size:16px;opacity:.9;margin-top:10px;margin-bottom:34px}
+  .login-btns{display:flex;flex-direction:column;gap:12px}
+  .lbtn{padding:16px;border-radius:16px;border:none;font-family:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .lbtn:active{transform:scale(.98)}
+  .lbtn.primary{background:#fff;color:var(--green)}
+  .lbtn.ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .lbtn.text{background:none;color:#fff;opacity:.85;font-weight:600}
+  .login-field{margin-bottom:14px}
+  .login-field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px;opacity:.9}
+  .login-field input{width:100%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;font-family:inherit;font-size:16px;color:#fff;outline:none}
+  .login-field input::placeholder{color:rgba(255,255,255,.6)}
+  .login-back{position:absolute;top:20px;left:20px;background:rgba(255,255,255,.15);border:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer}
+  .login-back .ms{color:#fff}
+  .acct-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .acct-opt{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);border-radius:14px;padding:13px 8px;text-align:center;cursor:pointer;font-size:13px;font-weight:600;color:#fff;transition:.18s;display:flex;flex-direction:column;align-items:center;gap:5px}
+  .acct-opt .ms{font-size:24px}
+  .acct-opt.on{background:#fff;color:var(--green);border-color:#fff}
+  .verify-box{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center}
+  .verify-cam{width:100%;height:160px;background:rgba(0,0,0,.25);border-radius:12px;display:grid;place-items:center;margin-bottom:12px;position:relative;overflow:hidden}
+  .verify-scan{position:absolute;left:0;right:0;height:3px;background:var(--green2);box-shadow:0 0 12px var(--green2);animation:scan 2s ease-in-out infinite}
+  @keyframes scan{0%,100%{top:15%}50%{top:85%}}
+  .empty{text-align:center;padding:50px 30px;color:var(--muted)}
+  .empty .ms{font-size:52px;opacity:.4;margin-bottom:12px}
+  .spinner{width:44px;height:44px;border:4px solid var(--green-soft);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+  .fb-status{position:absolute;top:0;left:0;right:0;z-index:60;text-align:center;font-size:11px;font-weight:600;padding:5px;color:#fff;display:none}
+  .fb-status.local{background:#E67E00;display:block}
+  .fb-status.live{background:var(--green);display:block;animation:fadeout 3s forwards}
+  @keyframes fadeout{0%,70%{opacity:1}100%{opacity:0;display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="fb-status" id="fb-status"></div>
+
+  <!-- LOGIN -->
+  <div class="login" id="login">
+    <div id="login-main">
+      <div class="logo-badge"><span class="ms">forest</span></div>
+      <h1>ElbeValley</h1>
+      <p class="slogan">Die Region kommt zusammen.</p>
+      <div class="login-btns">
+        <button class="lbtn primary" onclick="showRegister()"><span class="ms">person_add</span>Profil erstellen</button>
+        <button class="lbtn ghost" onclick="showLogin()"><span class="ms">login</span>Anmelden</button>
+        <button class="lbtn text" onclick="enterAsGuest()">Als Gast fortfahren →</button>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="login-register" style="display:none">
+      <button class="login-back" onclick="loginHome()"><span class="ms">arrow_back</span></button>
+      <div style="margin-top:40px">
+        <h1 style="font-size:28px">Profil erstellen</h1>
+        <p class="slogan" style="margin-bottom:24px">Werde Teil der Region.</p>
+        <div class="login-field"><label>Art des Kontos *</label>
+          <div class="acct-grid">
+            <div class="acct-opt on" data-acct="privat" onclick="selAccount('privat',this)"><span class="ms">person</span>Privatperson</div>
+            <div class="acct-opt" data-acct="unternehmen" onclick="selAccount('unternehmen',this)"><span class="ms">business_center</span>Unternehmen</div>
+            <div class="acct-opt" data-acct="verein" onclick="selAccount('verein',this)"><span class="ms">diversity_3</span>Verein</div>
+            <div class="acct-opt" data-acct="institution" onclick="selAccount('institution',this)"><span class="ms">account_balance</span>Institution</div>
+          </div>
+        </div>
+        <div class="login-field"><label id="reg-name-label">Dein Name *</label><input id="reg-name" placeholder="z.B. Anna Müller"></div>
+        <div class="login-field"><label>E-Mail *</label><input id="reg-email" type="email" placeholder="z.B. anna@beispiel.de"></div>
+        <div class="login-field"><label>Wohnort *</label><input id="reg-loc" placeholder="z.B. Bleckede"></div>
+        <button class="lbtn primary" onclick="startVerify()"><span class="ms">arrow_forward</span>Weiter zur Verifizierung</button>
+      </div>
+    </div>
+
+    <!-- VERIFY -->
+    <div id="login-verify" style="display:none">
+      <button class="login-back" onclick="showRegister()"><span class="ms">arrow_back</span></button>
+      <div style="margin-top:40px">
+        <h1 style="font-size:26px">Foto-Verifizierung</h1>
+        <p class="slogan" style="margin-bottom:20px">Zur Sicherheit der Community bestätige, dass du echt bist.</p>
+        <div class="verify-box">
+          <div class="verify-cam"><span class="ms" style="font-size:52px;opacity:.6">face</span><div class="verify-scan"></div></div>
+          <div style="font-size:13px;opacity:.85">Positioniere dein Gesicht im Rahmen</div>
+        </div>
+        <button class="lbtn primary" onclick="finishVerify(true)"><span class="ms">verified</span>Verifizierung abschließen</button>
+        <button class="lbtn text" onclick="finishVerify(false)" style="margin-top:10px">Überspringen (später verifizieren)</button>
+      </div>
+    </div>
+
+    <!-- LOGIN existing -->
+    <div id="login-signin" style="display:none">
+      <button class="login-back" onclick="loginHome()"><span class="ms">arrow_back</span></button>
+      <div style="margin-top:40px">
+        <h1 style="font-size:28px">Anmelden</h1>
+        <p class="slogan" style="margin-bottom:24px">Willkommen zurück.</p>
+        <div class="login-field"><label>Dein Name</label><input id="signin-name" placeholder="Wie du dich registriert hast"></div>
+        <button class="lbtn primary" onclick="doSignin()"><span class="ms">login</span>Anmelden</button>
+        <p style="font-size:12px;opacity:.7;margin-top:14px;text-align:center">Gib denselben Namen ein, mit dem du dein Profil erstellt hast.</p>
+
+        <!-- DEMO ACCOUNTS -->
+        <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,.2);padding-top:22px">
+          <p style="font-size:12px;font-weight:700;opacity:.8;text-align:center;margin-bottom:14px;letter-spacing:.5px;text-transform:uppercase">🎭 Workshop Demo-Accounts</p>
+          <div style="display:flex;flex-direction:column;gap:9px" id="demo-accounts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="hdr" id="hdr">
+    <div>
+      <h1 id="hdr-title">Karte</h1>
+      <div class="sub" id="hdr-sub">Elbe Valley · Region entdecken</div>
+    </div>
+    <div class="hdr-actions">
+      <button class="iconbtn" onclick="openNotifs()"><span class="ms">notifications</span><span class="badge-dot" id="notif-dot"></span></button>
+      <button class="iconbtn" onclick="openAdmin()" title="Admin"><span class="ms">shield_person</span></button>
+    </div>
+  </div>
+
+  <div class="screen active" id="s-map">
+    <div class="map-wrap">
+      <div class="map-search">
+        <input placeholder="Ort oder Aktivität suchen…" onfocus="this.blur();toast('Suche in der Demo deaktiviert')">
+        <button class="filterbtn" onclick="openFilters()"><span class="ms">tune</span>Filter</button>
+      </div>
+      <div class="chips" id="map-chips"></div>
+      <div id="map"></div>
+      <button class="fab" onclick="openCreatePin()"><span class="ms">add_location_alt</span></button>
+    </div>
+  </div>
+
+  <div class="screen" id="s-community">
+    <div style="padding:14px 18px 4px"><button class="btn" style="margin:0" onclick="openCreatePost()"><span class="ms">edit</span>Beitrag schreiben</button></div>
+    <div id="feed"></div>
+  </div>
+
+  <div class="screen" id="s-rec">
+    <div class="chips" style="position:static;padding:14px 12px 4px" id="rec-chips"></div>
+    <div id="rec-list"></div>
+  </div>
+
+  <div class="screen" id="s-portal">
+    <div class="seg">
+      <button class="on" onclick="portalTab('issues',this)">Anliegen</button>
+      <button onclick="portalTab('official',this)">Amtliche Infos</button>
+    </div>
+    <div id="portal-issues">
+      <div style="padding:0 18px 8px"><button class="btn" style="margin:0" onclick="openCreateIssue()"><span class="ms">campaign</span>Anliegen melden</button></div>
+      <div id="issue-list"></div>
+    </div>
+    <div id="portal-official" style="display:none"></div>
+  </div>
+
+  <div class="screen" id="s-profile"></div>
+
+  <div class="nav" id="nav">
+    <button class="on" onclick="go('map',this)"><span class="ms">map</span><span class="lbl">Karte</span></button>
+    <button onclick="go('community',this)"><span class="ms">forum</span><span class="lbl">Community</span></button>
+    <button onclick="go('rec',this)"><span class="ms">recommend</span><span class="lbl">Tipps</span></button>
+    <button onclick="go('portal',this)"><span class="ms">account_balance</span><span class="lbl">Portal</span></button>
+    <button onclick="go('profile',this)"><span class="ms">person</span><span class="lbl">Profil</span></button>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="if(event.target===this)closeSheet()">
+    <div class="sheet" id="sheet"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<!-- ============================================================= -->
+<!--  FIREBASE  –  HIER EURE ZUGANGSDATEN EINSETZEN                 -->
+<!-- ============================================================= -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAabGPsYOhuKEhXKX8EHZrHrVybzYdBBR0",
+    authDomain: "elbevalley-e5173.firebaseapp.com",
+    projectId: "elbevalley-e5173",
+    storageBucket: "elbevalley-e5173.firebasestorage.app",
+    messagingSenderId: "4145726672",
+    appId: "1:4145726672:web:668947a168d9ed9f99cad5"
+  };
+
+  // Prüfen ob Config eingesetzt wurde
+  const configReady = firebaseConfig.projectId && firebaseConfig.apiKey;
+
+  window.FB = { ready:false };
+
+  if(configReady){
+    try{
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      window.FB = {
+        ready:true, db, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp
+      };
+      document.getElementById('fb-status').className='fb-status live';
+      document.getElementById('fb-status').textContent='🟢 Live verbunden – Daten werden geteilt';
+    }catch(e){
+      console.error('Firebase-Fehler:',e);
+      showLocalBanner();
+    }
+  } else {
+    showLocalBanner();
+  }
+  function showLocalBanner(){
+    const el=document.getElementById('fb-status');
+    el.className='fb-status local';
+    el.textContent='⚠️ Lokaler Demo-Modus – Firebase-Config noch nicht eingesetzt';
+  }
+  // App starten, sobald Firebase-Status feststeht
+  window.dispatchEvent(new Event('fb-init-done'));
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ============ STATIC DATA (Demo-Grundstock) ============ */
+const CATS = {
+  aktiv:{label:'Gemeinsame Aktivität',ico:'groups',color:'#2E7D32'},
+  wandern:{label:'Wandern',ico:'hiking',color:'#558B2F'},
+  fahrrad:{label:'Fahrrad',ico:'directions_bike',color:'#00897B'},
+  grillen:{label:'Grillen',ico:'outdoor_grill',color:'#E64A19'},
+  sport:{label:'Sport',ico:'sports_soccer',color:'#1976D2'},
+  vereine:{label:'Vereine',ico:'diversity_3',color:'#5E35B1'},
+  nachbar:{label:'Nachbarschaftshilfe',ico:'volunteer_activism',color:'#C2185B'},
+  floh:{label:'Flohmarkt',ico:'storefront',color:'#F9A825'},
+  schuetzen:{label:'Schützenfest',ico:'celebration',color:'#6D4C41'},
+  dorffest:{label:'Dorffest',ico:'festival',color:'#D81B60'},
+  markt:{label:'Markt',ico:'local_grocery_store',color:'#43A047'},
+  kultur:{label:'Kultur',ico:'theater_comedy',color:'#8E24AA'},
+  gastro:{label:'Gastronomie',ico:'restaurant',color:'#EF6C00'},
+  sehens:{label:'Sehenswürdigkeit',ico:'photo_camera',color:'#0097A7'},
+  lost:{label:'Lost Place',ico:'castle',color:'#455A64'},
+  natur:{label:'Natur',ico:'park',color:'#2E7D32'},
+  unternehmen:{label:'Unternehmen',ico:'business_center',color:'#3949AB'},
+};
+const P = {
+  lena:{n:'Lena Brandt',c:'#2E7D32',i:'LB'}, tom:{n:'Tom Herzog',c:'#1976D2',i:'TH'},
+  maria:{n:'Maria Kessler',c:'#C2185B',i:'MK'}, jonas:{n:'Jonas Feld',c:'#EF6C00',i:'JF'},
+  petra:{n:'Petra Wolf',c:'#5E35B1',i:'PW'}, gasthof:{n:'Gasthof zur Elbe',c:'#6D4C41',i:'GE'},
+  verein:{n:'SV Elbaue e.V.',c:'#00897B',i:'SV'}, gemeinde:{n:'Gemeinde Bleckede',c:'#2E7D32',i:'GB'},
+  klaus:{n:'Klaus Richter',c:'#455A64',i:'KR'}, sarah:{n:'Sarah Vogt',c:'#D81B60',i:'SV'},
+};
+const SEED_PINS = [
+  {id:'seed1',cat:'schuetzen',pub:true,t:'Schützenfest Bleckede',lat:53.288,lng:10.732,host:'verein',date:'Sa. 12. Juli',time:'14:00',desc:'Traditionelles Schützenfest mit Festumzug, Blaskapelle und Festzelt. Für die ganze Familie!',loc:'Festplatz Bleckede',free:false,interested:87},
+  {id:'seed2',cat:'wandern',pub:false,t:'Elbufer-Wanderung Sonnenaufgang',lat:53.301,lng:10.755,host:'lena',date:'So. 6. Juli',time:'05:30',desc:'Frühaufsteher aufgepasst! Gemütliche 8km entlang der Elbe zum Sonnenaufgang. Danach Frühstück.',loc:'Parkplatz Elbdeich',limit:8,joined:5,free:true},
+  {id:'seed3',cat:'dorffest',pub:true,t:'Dorffest Neu Darchau',lat:53.229,lng:10.888,host:'gemeinde',date:'Sa. 19. Juli',time:'15:00',desc:'Das jährliche Dorffest mit Livemusik, regionalen Ständen und Kinderprogramm.',loc:'Dorfplatz Neu Darchau',free:true,interested:143},
+  {id:'seed4',cat:'gastro',pub:true,t:'Gasthof zur Elbe',lat:53.285,lng:10.738,host:'gasthof',date:'Täglich',time:'11–22',desc:'Regionale Küche seit 1887, hauseigenes Bier und Biergarten mit Elbblick.',loc:'Hauptstraße 12, Bleckede',free:false},
+  {id:'seed5',cat:'lost',pub:false,t:'Verlassene Ziegelei erkunden',lat:53.315,lng:10.71,host:'klaus',date:'Sa. 12. Juli',time:'16:00',desc:'Fototour durch die alte Ziegelei. Festes Schuhwerk mitbringen! Nur für Erfahrene.',loc:'Treffpunkt wird nach Zusage geteilt',limit:6,joined:4,free:true},
+  {id:'seed6',cat:'fahrrad',pub:false,t:'Radtour Elbe-Radweg',lat:53.25,lng:10.8,host:'tom',date:'So. 13. Juli',time:'10:00',desc:'Entspannte 35km Tour auf dem Elberadweg mit Einkehr. Alle Konditionen willkommen.',loc:'Bahnhof Dahlenburg',limit:12,joined:7,free:true},
+  {id:'seed7',cat:'grillen',pub:false,t:'Nachbarschafts-Grillen am Deich',lat:53.293,lng:10.748,host:'maria',date:'Fr. 11. Juli',time:'18:00',desc:'Bring dein eigenes Grillgut mit — Getränke und Salate teilen wir. Neue Nachbarn herzlich willkommen!',loc:'Grillplatz am Deich',limit:20,joined:12,free:true},
+  {id:'seed8',cat:'markt',pub:true,t:'Wochenmarkt Hitzacker',lat:53.152,lng:11.045,host:'gemeinde',date:'Jeden Samstag',time:'8–13',desc:'Frische regionale Produkte, Käse, Honig und Handwerk in der historischen Altstadt.',loc:'Marktplatz Hitzacker',free:true,interested:56},
+  {id:'seed9',cat:'sport',pub:false,t:'Feierabend-Volleyball',lat:53.278,lng:10.72,host:'jonas',date:'Mi. 9. Juli',time:'19:00',desc:'Lockeres Beachvolleyball für alle Levels. Wir freuen uns über neue Gesichter!',loc:'Sportplatz Bleckede',limit:16,joined:9,free:true},
+  {id:'seed10',cat:'natur',pub:true,t:'Biosphärenreservat Flusslandschaft',lat:53.18,lng:10.95,host:'gemeinde',date:'Ganzjährig',time:'—',desc:'UNESCO-Biosphärenreservat mit Störchen, Auwäldern und seltenen Vögeln. Beobachtungstürme frei zugänglich.',loc:'Elbtalaue',free:true,interested:34},
+  {id:'seed11',cat:'vereine',pub:false,t:'Chorprobe – Neue Stimmen gesucht',lat:53.287,lng:10.735,host:'petra',date:'Do. 10. Juli',time:'19:30',desc:'Der Gemeindechor sucht Verstärkung! Keine Vorkenntnisse nötig, einfach vorbeikommen.',loc:'Gemeindehaus Bleckede',limit:30,joined:18,free:true},
+  {id:'seed12',cat:'kultur',pub:true,t:'Sommerkonzert am Elbufer',lat:53.246,lng:10.556,host:'gemeinde',date:'Sa. 26. Juli',time:'19:00',desc:'Open-Air-Klassikkonzert bei Sonnenuntergang. Decke und Picknick mitbringen.',loc:'Elbwiese Lauenburg',free:false,interested:98},
+];
+const SEED_COMMUNITY = [
+  {id:'sc1',who:'maria',anon:false,cat:'Nachbarschaft',time:'vor 2 Std',body:'Hat jemand Lust, eine Fahrgemeinschaft zum Wochenmarkt nach Hitzacker zu bilden? Samstags früh, fahre eh mit dem Auto und habe 3 Plätze frei! 🚗',img:false,likes:24,comments:8},
+  {id:'sc2',who:'jonas',anon:false,cat:'Freizeit',time:'vor 4 Std',body:'Der Sonnenuntergang an der Elbe war gestern einfach unglaublich. Wir sollten öfter spontan zusammen runter zum Deich! Wer ist dabei?',img:true,likes:67,comments:15},
+  {id:'sc3',who:'anon',anon:true,cat:'Frage',time:'vor 6 Std',body:'Gibt es hier eigentlich einen guten Fahrradladen in der Nähe? Meins muss dringend repariert werden und ich bin neu zugezogen.',img:false,likes:12,comments:11},
+  {id:'sc4',who:'petra',anon:false,cat:'Verein',time:'gestern',body:'Unser Chor sucht weiter neue Stimmen! 🎶 Besonders Männerstimmen sind herzlich willkommen. Donnerstags um 19:30 im Gemeindehaus. Kommt einfach vorbei!',img:false,likes:41,comments:6},
+  {id:'sc5',who:'klaus',anon:false,cat:'Fotografie',time:'gestern',body:'Kleine Fototour durch die alte Ziegelei letztes Wochenende. Die Natur holt sich alles zurück. Wer Interesse an Lost-Place-Fotografie hat, meldet sich!',img:true,likes:89,comments:22},
+];
+const RECS = [
+  {cat:'Sehenswürdigkeit',t:'Altstadt Hitzacker',ico:'photo_camera',rating:4.8,desc:'Malerische Fachwerk-Inselstadt an der Jeetzel. Perfekt für einen Bummel und Kaffee am Wasser.',loc:'Hitzacker',open:'Immer geöffnet',color:'#0097A7'},
+  {cat:'Natur',t:'Elbberge Bleckede',ico:'park',rating:4.9,desc:'Aussichtspunkt mit Panoramablick über das Elbtal. Besonders schön zum Sonnenuntergang.',loc:'Bleckede',open:'Ganzjährig',color:'#2E7D32'},
+  {cat:'Gastronomie',t:'Gasthof zur Elbe',ico:'restaurant',rating:4.6,desc:'Traditionsküche mit Biergarten und Elbblick. Das hauseigene Bier ist ein Muss.',loc:'Bleckede',open:'11:00–22:00',color:'#EF6C00'},
+  {cat:'Ausflugsziel',t:'Biosphaerium Elbtalaue',ico:'pets',rating:4.7,desc:'Erlebniszentrum mit Störchen, Fischottern und Ausstellung zur Flusslandschaft. Ideal für Familien.',loc:'Bleckede',open:'10:00–18:00',color:'#00897B'},
+  {cat:'Café',t:'Café am Marktplatz',ico:'local_cafe',rating:4.5,desc:'Hausgemachte Torten und fairer Kaffee im Herzen der Altstadt. Sonnige Terrasse.',loc:'Hitzacker',open:'9:00–18:00',color:'#8D6E63'},
+  {cat:'Lost Place',t:'Alte Ziegelei',ico:'castle',rating:4.4,desc:'Verlassene Backsteinruine, von der Natur zurückerobert. Ein Paradies für Fotografen.',loc:'bei Bleckede',open:'Auf eigene Gefahr',color:'#455A64'},
+];
+let ISSUES = [
+  {id:'si1',t:'Schlagloch auf der Hauptstraße',cat:'Straße',status:'prog',desc:'Tiefes Schlagloch Höhe Hausnummer 45, schon mehrere platte Reifen. Bitte dringend ausbessern!',loc:'Hauptstraße, Bleckede',up:34,down:1,myvote:null,who:'tom'},
+  {id:'si2',t:'Defekte Straßenlaterne am Deichweg',cat:'Beleuchtung',status:'neu',desc:'Die Laterne am Deichaufgang ist seit zwei Wochen aus. Abends stockdunkel und gefährlich für Radfahrer.',loc:'Deichweg',up:19,down:0,myvote:null,who:'maria'},
+  {id:'si3',t:'Wunsch: Bushaltestelle Neubaugebiet',cat:'Nahverkehr',status:'neu',desc:'Im neuen Wohngebiet fehlt eine Anbindung. Viele Familien ohne Auto wären dankbar für eine Haltestelle.',loc:'Am Sonnenhang',up:62,down:4,myvote:null,who:'petra'},
+  {id:'si4',t:'Spielplatz-Sanierung gewünscht',cat:'Spielplatz',status:'prog',desc:'Die Schaukeln sind kaputt und der Sand müsste erneuert werden. Unsere Kinder würden sich sehr freuen.',loc:'Spielplatz Rosenweg',up:47,down:2,myvote:null,who:'sarah'},
+  {id:'si5',t:'Neuer Fahrradweg entlang der L221',cat:'Radweg',status:'neu',desc:'Die Landstraße ist für Radfahrer sehr gefährlich. Ein separater Radweg würde Schüler und Pendler schützen.',loc:'L221 Richtung Dahlenburg',up:78,down:6,myvote:null,who:'jonas'},
+  {id:'si6',t:'Überfüllte Mülleimer am Elbufer',cat:'Müll',status:'done',desc:'Am beliebten Grillplatz quellen die Mülleimer am Wochenende über. Größere Behälter wären super.',loc:'Grillplatz am Deich',up:29,down:0,myvote:null,who:'klaus'},
+];
+const OFFICIAL = [
+  {ico:'construction',t:'Vollsperrung Elbbrücke',time:'Aktuell',body:'Die Elbbrücke bei Bleckede ist wegen Sanierungsarbeiten vom 7.–14. Juli voll gesperrt. Umleitung über die Fähre ausgeschildert.',color:'#E67E00'},
+  {ico:'warning',t:'Hochwasser-Warnung Stufe 1',time:'vor 3 Std',body:'Aufgrund anhaltender Regenfälle steigt der Elbpegel. Uferbereiche meiden. Aktuelle Pegelstände auf der Gemeindeseite.',color:'#C62828'},
+  {ico:'celebration',t:'Einladung Bürgerversammlung',time:'gestern',body:'Am 18. Juli um 19 Uhr lädt die Gemeinde zur Bürgerversammlung ins Rathaus. Thema: Zukunft des Ortskerns.',color:'#2E7D32'},
+];
+const NOTIFS = [
+  {ico:'check_circle',color:'#2E7D32',txt:'<b>Tom Herzog</b> hat deine Anfrage für die Radtour angenommen! 🎉',time:'vor 10 Min',unread:true},
+  {ico:'chat',color:'#1976D2',txt:'Neue Nachricht im Gruppenchat <b>Elbufer-Wanderung</b>',time:'vor 25 Min',unread:true},
+  {ico:'favorite',color:'#E53935',txt:'<b>Maria</b> und 23 weitere gefällt dein Beitrag',time:'vor 1 Std',unread:true},
+  {ico:'location_on',color:'#5E35B1',txt:'Neue Veranstaltung in deiner Nähe: <b>Sommerkonzert am Elbufer</b>',time:'gestern',unread:false},
+];
+
+/* ============ LIVE STATE (Seed + Firebase-Daten gemischt) ============ */
+let PINS=[...SEED_PINS];
+let COMMUNITY=[...SEED_COMMUNITY];
+let USER=null;                       // {name, loc, initials, color, verified}
+let CURRENT_USER='Gast';
+let map, markers=[], activeFilter='alle', pendingReqs={}, joinedReqs={}, likedPosts={};
+let pendingReg={};
+
+/* ============ USER / LOGIN FLOW ============ */
+function loginHome(){['main','register','verify','signin'].forEach(v=>document.getElementById('login-'+v).style.display='none');document.getElementById('login-main').style.display='block';}
+function showRegister(){['main','register','verify','signin'].forEach(v=>document.getElementById('login-'+v).style.display='none');document.getElementById('login-register').style.display='block';}
+function showLogin(){['main','register','verify','signin'].forEach(v=>document.getElementById('login-'+v).style.display='none');document.getElementById('login-signin').style.display='block';renderDemoAccounts();}
+const ACCOUNT_TYPES={
+  privat:{label:'Privatperson',ico:'person',nameLabel:'Dein Name *',namePh:'z.B. Anna Müller'},
+  unternehmen:{label:'Unternehmen',ico:'business_center',nameLabel:'Firmenname *',namePh:'z.B. Gasthof zur Elbe'},
+  verein:{label:'Verein',ico:'diversity_3',nameLabel:'Vereinsname *',namePh:'z.B. SV Elbaue e.V.'},
+  institution:{label:'Institution',ico:'account_balance',nameLabel:'Name der Institution *',namePh:'z.B. Gemeinde Bleckede'},
+};
+let selAcct='privat';
+function selAccount(type,el){
+  selAcct=type;
+  document.querySelectorAll('.acct-opt').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');
+  const t=ACCOUNT_TYPES[type];
+  document.getElementById('reg-name-label').textContent=t.nameLabel;
+  document.getElementById('reg-name').placeholder=t.namePh;
+}
+function startVerify(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const loc=document.getElementById('reg-loc').value.trim();
+  if(!name){toast('Bitte gib einen Namen ein');return;}
+  if(!email){toast('Bitte gib eine E-Mail ein');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Bitte gib eine gültige E-Mail ein');return;}
+  if(!loc){toast('Bitte gib deinen Wohnort ein');return;}
+  pendingReg={name,email,loc,acct:selAcct};
+  ['main','register','verify','signin'].forEach(v=>document.getElementById('login-'+v).style.display='none');
+  document.getElementById('login-verify').style.display='block';
+}
+function finishVerify(verified){
+  const colors=['#2E7D32','#1976D2','#C2185B','#EF6C00','#5E35B1','#00897B','#D81B60','#6D4C41','#3949AB','#8E24AA'];
+  const name=pendingReg.name;
+  const initials=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  USER={name,email:pendingReg.email,loc:pendingReg.loc,acct:pendingReg.acct,initials,color:colors[Math.floor(Math.random()*colors.length)],verified};
+  CURRENT_USER=name;
+  // Persona-Eintrag anlegen, damit eigene Beiträge korrekt angezeigt werden
+  P['me']={n:name,c:USER.color,i:initials};
+  enterApp(verified?'Profil erstellt & verifiziert ✓':'Profil erstellt ✓ (unverifiziert)');
+}
+/* ============ DEMO ACCOUNTS ============ */
+const DEMO_USERS = [
+  {name:'Anna Müller',    loc:'Bleckede',     acct:'privat',      color:'#2E7D32', verified:true,  emoji:'👩‍🌾', role:'Bürgerin'},
+  {name:'Tom Herzog',     loc:'Hitzacker',    acct:'privat',      color:'#1976D2', verified:true,  emoji:'🚴',  role:'Radfahrer'},
+  {name:'Gasthof zur Elbe',loc:'Bleckede',   acct:'unternehmen', color:'#EF6C00', verified:true,  emoji:'🍺',  role:'Unternehmen'},
+  {name:'SV Elbaue e.V.', loc:'Bleckede',    acct:'verein',      color:'#00897B', verified:true,  emoji:'⚽',  role:'Verein'},
+  {name:'Gemeinde Bleckede',loc:'Bleckede',  acct:'institution', color:'#5E35B1', verified:true,  emoji:'🏛️', role:'Institution'},
+  {name:'Petra Wolf',     loc:'Neu Darchau', acct:'privat',      color:'#C2185B', verified:false, emoji:'🎶',  role:'Bürgerin'},
+];
+function renderDemoAccounts(){
+  const el=document.getElementById('demo-accounts');
+  if(!el)return;
+  el.innerHTML=DEMO_USERS.map(u=>`
+    <button onclick="loginAsDemo(${JSON.stringify(u).replace(/"/g,'&quot;')})"
+      style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:14px;
+             padding:11px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;text-align:left;
+             font-family:inherit;color:#fff;transition:.15s;width:100%"
+      onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">
+      <div style="width:38px;height:38px;border-radius:50%;background:${u.color};display:grid;place-items:center;font-size:18px;flex-shrink:0">${u.emoji}</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:14px">${u.name}</div>
+        <div style="font-size:11px;opacity:.75">${u.role} · ${u.loc}${u.verified?' · ✅ Verifiziert':''}</div>
+      </div>
+      <span class="ms" style="opacity:.6;font-size:20px">arrow_forward_ios</span>
+    </button>`).join('');
+}
+function loginAsDemo(u){
+  const initials=u.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  USER={name:u.name,loc:u.loc,acct:u.acct,initials,color:u.color,verified:u.verified,email:u.name.toLowerCase().replace(/\s/g,'.')+'@workshop.demo'};
+  CURRENT_USER=u.name;
+  P['me']={n:u.name,c:u.color,i:initials};
+  enterApp('Willkommen, '+u.name.split(' ')[0]+'! 👋');
+}
+
+function doSignin(){
+  const name=document.getElementById('signin-name').value.trim();
+  if(!name){toast('Bitte gib deinen Namen ein');return;}
+  const initials=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  USER={name,loc:'Elbe Valley',initials,color:'#2E7D32',verified:true};
+  CURRENT_USER=name;P['me']={n:name,c:USER.color,i:initials};
+  enterApp('Willkommen zurück, '+name.split(' ')[0]+'!');
+}
+function enterAsGuest(){
+  USER={name:'Gast',loc:'Region Elbe Valley',initials:'G',color:'#90A4AE',verified:false,guest:true};
+  CURRENT_USER='Gast';
+  enterApp('Als Gast angemeldet');
+}
+function enterApp(msg){
+  document.getElementById('login').classList.add('hide');
+  setTimeout(()=>{ if(!map) initMap(); else map.invalidateSize(); },120);
+  renderAll();
+  if(msg)setTimeout(()=>toast(msg),400);
+}
+
+/* ============ FIREBASE SYNC ============ */
+function initFirebase(){
+  if(!window.FB || !window.FB.ready) return; // Lokaler Modus
+  const {db,collection,onSnapshot,query,orderBy}=window.FB;
+  // Live-Feed: Community-Beiträge
+  try{
+    onSnapshot(query(collection(db,'posts'),orderBy('created','desc')),snap=>{
+      const live=[];snap.forEach(d=>live.push({id:d.id,...d.data(),fromDB:true}));
+      COMMUNITY=[...live,...SEED_COMMUNITY];
+      renderFeed();
+    });
+    // Live-Pins
+    onSnapshot(query(collection(db,'pins'),orderBy('created','desc')),snap=>{
+      const live=[];snap.forEach(d=>live.push({id:d.id,...d.data(),fromDB:true}));
+      PINS=[...SEED_PINS,...live];
+      if(map)renderMarkers();
+    });
+  }catch(e){console.error('Sync-Fehler',e);}
+}
+window.addEventListener('fb-init-done',initFirebase);
+
+/* ============ NAV ============ */
+const TITLES={map:['Karte','Elbe Valley · Region entdecken'],community:['Community','Regionaler Austausch'],rec:['Tipps','Empfehlungen der Region'],portal:['Bürgerportal','Bürger & Landkreis'],profile:['Profil','Dein ElbeValley']};
+function go(screen,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+screen).classList.add('active');
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  document.getElementById('hdr-title').textContent=TITLES[screen][0];
+  document.getElementById('hdr-sub').textContent=TITLES[screen][1];
+  if(screen==='map'&&map)setTimeout(()=>map.invalidateSize(),100);
+}
+
+/* ============ MAP ============ */
+function initMap(){
+  map=L.map('map',{zoomControl:false,attributionControl:false}).setView([53.27,10.78],11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+  L.control.attribution({prefix:false}).addAttribution('© OpenStreetMap').addTo(map);
+  renderMarkers();renderMapChips();
+}
+function makeIcon(cat){
+  const c=CATS[cat]||CATS.aktiv;
+  return L.divIcon({className:'',html:`<div class="pin-ico" style="background:${c.color}"><span class="ms">${c.ico}</span></div>`,iconSize:[36,36],iconAnchor:[18,36],popupAnchor:[0,-36]});
+}
+function renderMarkers(){
+  markers.forEach(m=>map.removeLayer(m));markers=[];
+  PINS.forEach(p=>{
+    if(activeFilter!=='alle'&&p.cat!==activeFilter)return;
+    const m=L.marker([p.lat,p.lng],{icon:makeIcon(p.cat)}).addTo(map);
+    m.on('click',()=>openPinDetail(p.id));markers.push(m);
+  });
+}
+function renderMapChips(){
+  const wrap=document.getElementById('map-chips');
+  let html=`<div class="chip ${activeFilter==='alle'?'on':''}" onclick="setFilter('alle')"><span class="ms">apps</span>Alle</div>`;
+  ['schuetzen','dorffest','wandern','fahrrad','grillen','markt','kultur','natur'].forEach(k=>{
+    html+=`<div class="chip ${activeFilter===k?'on':''}" onclick="setFilter('${k}')"><span class="ms">${CATS[k].ico}</span>${CATS[k].label}</div>`;
+  });
+  wrap.innerHTML=html;
+}
+function setFilter(f){activeFilter=f;renderMarkers();renderMapChips();}
+function openFilters(){toast('Erweiterte Filter: Kategorie-Chips oben nutzen');}
+
+/* ============ PIN DETAIL ============ */
+function findPin(id){return PINS.find(x=>String(x.id)===String(id));}
+function openPinDetail(id){
+  const p=findPin(id);if(!p)return;const c=CATS[p.cat];const host=P[p.host]||{n:p.hostName||'Community-Mitglied',c:'#2E7D32',i:(p.hostName||'?')[0]};
+  const isPending=pendingReqs[id];const isJoined=joinedReqs[id];
+  let actionBtn='';
+  if(p.pub){
+    actionBtn=`<button class="btn" onclick="toast('Zu deinem Kalender hinzugefügt 📅')"><span class="ms">event_available</span>Interessiert · Kalender</button>`;
+  }else if(isJoined){
+    actionBtn=`<button class="btn ok"><span class="ms">check_circle</span>Du nimmst teil</button>
+      <button class="btn" style="margin-top:10px" onclick="openChat('${id}')"><span class="ms">chat</span>Gruppenchat öffnen</button>`;
+  }else if(isPending){
+    actionBtn=`<button class="btn pending"><span class="ms">hourglass_top</span>Anfrage gesendet…</button>`;
+  }else{
+    actionBtn=`<button class="btn" onclick="sendRequest('${id}')"><span class="ms">group_add</span>Teilnehmen anfragen</button>`;
+  }
+  const locked=!p.pub&&!isJoined;
+  showSheet(`
+    <div class="sheet-hero" style="background:linear-gradient(135deg,${c.color},${shade(c.color)})">
+      <button class="sheet-close" onclick="closeSheet()"><span class="ms">close</span></button>
+      <span class="ms">${c.ico}</span>
+    </div>
+    <div class="sheet-body">
+      <span class="sheet-cat" style="background:${c.color}22;color:${c.color}"><span class="ms" style="font-size:15px">${c.ico}</span>${c.label}${p.pub?' · Öffentlich':' · Private Aktivität'}</span>
+      <div class="sheet-title">${p.t}</div>
+      <div class="sheet-host">
+        <div class="avatar" style="background:${host.c}">${host.i}</div>
+        <div><div style="font-weight:700;font-size:14px">${host.n}</div><div style="font-size:12px;color:var(--muted)">Veranstalter:in</div></div>
+      </div>
+      <p style="font-size:14.5px;line-height:1.6;margin-bottom:6px">${p.desc}</p>
+      <div style="margin-top:10px">
+        <div class="detail-row"><span class="ms">calendar_month</span>${p.date}</div>
+        <div class="detail-row ${locked?'locked':''}"><span class="ms">${locked?'lock':'schedule'}</span>${locked?'Uhrzeit nach Zusage sichtbar':'Uhrzeit: '+p.time+' Uhr'}</div>
+        <div class="detail-row ${locked?'locked':''}"><span class="ms">${locked?'lock':'location_on'}</span>${locked?'Treffpunkt nach Zusage sichtbar':p.loc}</div>
+        ${p.limit?`<div class="detail-row"><span class="ms">group</span>${p.joined||0} / ${p.limit} Teilnehmende</div>`:''}
+        ${p.pub&&p.interested?`<div class="detail-row"><span class="ms">favorite</span>${p.interested} Interessierte</div>`:''}
+        <div class="detail-row"><span class="ms">${p.free?'sell':'euro'}</span>${p.free?'Kostenlos':'Kostenpflichtig'}</div>
+      </div>
+      ${actionBtn}
+    </div>`);
+}
+function sendRequest(id){
+  pendingReqs[id]=true;closeSheet();toast('Anfrage gesendet ✓');
+  setTimeout(()=>{joinedReqs[id]=true;delete pendingReqs[id];toast('🎉 Anfrage angenommen! Chat freigeschaltet');document.getElementById('notif-dot').style.display='block';},2600);
+}
+
+/* ============ CHAT ============ */
+const CHATS={};
+function openChat(id){
+  const p=findPin(id);const host=P[p.host]||{n:'Veranstalter'};
+  if(!CHATS[id])CHATS[id]=[
+    {who:'host',name:host.n,txt:'Hey und willkommen in der Gruppe! 👋 Freut mich, dass du dabei bist.',time:'09:14'},
+    {who:'other',name:'Sarah V.',txt:'Super, ich freu mich schon! Soll ich was mitbringen?',time:'09:20'},
+    {who:'host',name:host.n,txt:'Getränke wären klasse, Snacks bringe ich mit 🙂',time:'09:22'},
+  ];
+  renderChat(id);
+}
+function renderChat(id){
+  const p=findPin(id);const c=CATS[p.cat];
+  const msgs=CHATS[id].map(m=>m.who==='me'?`<div class="msg me">${m.txt}<div class="time">${m.time}</div></div>`:`<div class="msg them"><div class="who">${m.name}</div>${m.txt}<div class="time">${m.time}</div></div>`).join('');
+  showSheet(`
+    <div style="position:sticky;top:0;background:${c.color};color:#fff;padding:16px 18px;display:flex;align-items:center;gap:12px;z-index:5">
+      <button class="sheet-close" style="position:static;background:rgba(255,255,255,.2)" onclick="openPinDetail('${id}')"><span class="ms" style="color:#fff">arrow_back</span></button>
+      <div><div style="font-weight:700">${p.t}</div><div style="font-size:12px;opacity:.9">${(p.joined||0)+1} Teilnehmende</div></div>
+    </div>
+    <div class="chat-msgs" id="chat-msgs">${msgs}</div>
+    <div class="chat-input">
+      <input id="chat-inp" placeholder="Nachricht…" onkeydown="if(event.key==='Enter')sendMsg('${id}')">
+      <button class="chat-send" onclick="sendMsg('${id}')"><span class="ms">send</span></button>
+    </div>`);
+  setTimeout(()=>{const m=document.getElementById('chat-msgs');if(m)m.scrollTop=m.scrollHeight;},50);
+}
+function sendMsg(id){
+  const inp=document.getElementById('chat-inp');if(!inp.value.trim())return;
+  const now=new Date();const t=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  CHATS[id].push({who:'me',txt:inp.value,time:t});renderChat(id);
+}
+
+/* ============ CREATE PIN (mit Firebase) ============ */
+let selCat='aktiv';
+function openCreatePin(){
+  if(USER&&USER.guest){toast('Als Gast kannst du keine Pins erstellen – bitte Profil anlegen');return;}
+  const grid=Object.keys(CATS).slice(0,12).map(k=>`<div class="cat-opt ${k==='aktiv'?'on':''}" onclick="selCat='${k}';document.querySelectorAll('.cat-opt').forEach(e=>e.classList.remove('on'));this.classList.add('on')"><span class="ms">${CATS[k].ico}</span>${CATS[k].label}</div>`).join('');
+  showSheet(`
+    <div class="sheet-handle"></div>
+    <div class="sheet-body">
+      <div class="sheet-title" style="margin-bottom:16px">Neuen Pin erstellen</div>
+      <div class="field"><label>Kategorie</label><div class="cat-grid">${grid}</div></div>
+      <div class="field"><label>Titel</label><input id="np-title" placeholder="z.B. Gemeinsame Radtour"></div>
+      <div class="field"><label>Beschreibung</label><textarea id="np-desc" placeholder="Worum geht es?"></textarea></div>
+      <div class="field"><label>Bilder</label><div class="imgdrop" onclick="toast('Bild-Upload in Demo simuliert 📷')"><span class="ms" style="font-size:32px">add_photo_alternate</span><div style="margin-top:6px">Foto hinzufügen</div></div></div>
+      <div class="row2">
+        <div class="field"><label>Datum</label><input id="np-date" type="date"></div>
+        <div class="field"><label>Uhrzeit</label><input id="np-time" type="time"></div>
+      </div>
+      <div class="field"><label>Treffpunkt</label><input id="np-loc" placeholder="Wo trefft ihr euch?"></div>
+      <div class="row2">
+        <div class="field"><label>Teilnehmerlimit</label><input id="np-limit" type="number" placeholder="optional"></div>
+        <div class="field"><label>Sichtbarkeit</label><select id="np-vis"><option value="false">Privat (mit Zusage)</option><option value="true">Öffentlich</option></select></div>
+      </div>
+      <button class="btn" id="np-save" onclick="savePin()"><span class="ms">add_location_alt</span>Pin veröffentlichen</button>
+    </div>`);
+}
+async function savePin(){
+  const t=document.getElementById('np-title').value||'Neue Aktivität';
+  const jit=(Math.random()-.5)*.08;
+  const pin={cat:selCat,pub:document.getElementById('np-vis').value==='true',t,
+    lat:53.27+jit,lng:10.78+jit*1.4,hostName:USER.name,host:'me',
+    date:document.getElementById('np-date').value||'Demnächst',time:document.getElementById('np-time').value||'12:00',
+    desc:document.getElementById('np-desc').value||'Beschreibung folgt.',loc:document.getElementById('np-loc').value||'Elbe Valley',
+    free:true,interested:0,limit:+document.getElementById('np-limit').value||null,joined:0};
+  const btn=document.getElementById('np-save');btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:22px;height:22px;border-width:3px"></div>';
+  if(window.FB&&window.FB.ready){
+    try{
+      const {db,collection,addDoc,serverTimestamp}=window.FB;
+      await addDoc(collection(db,'pins'),{...pin,created:serverTimestamp()});
+      closeSheet();toast('📍 Dein Pin ist jetzt für alle live!');
+      // onSnapshot rendert automatisch; kurz hinfliegen
+      setTimeout(()=>map.flyTo([pin.lat,pin.lng],13,{duration:1}),300);
+      return;
+    }catch(e){console.error(e);toast('Fehler beim Speichern – lokal gesichert');}
+  }
+  // Lokaler Fallback
+  const local={id:'l'+Date.now(),...pin};PINS.push(local);renderMarkers();closeSheet();
+  toast('📍 Pin erstellt (lokal)');map.flyTo([local.lat,local.lng],13,{duration:1});
+  setTimeout(()=>openPinDetail(local.id),1200);
+}
+
+/* ============ COMMUNITY (mit Firebase) ============ */
+function renderFeed(){
+  document.getElementById('feed').innerHTML=COMMUNITY.map(post=>{
+    const u=post.anon?{n:'Anonym',c:'#90A4AE',i:'?'}:(P[post.who]||{n:post.authorName||'Mitglied',c:post.authorColor||'#2E7D32',i:(post.authorName||'?').split(' ').map(w=>w[0]).join('').slice(0,2)});
+    const liked=likedPosts[post.id];
+    return `<div class="post">
+      <div class="post-top">
+        <div class="avatar" style="background:${u.c}">${u.i}</div>
+        <div style="flex:1">
+          <div class="post-name">${u.n} ${post.anon?'<span class="ms" style="font-size:15px;color:var(--muted)">visibility_off</span>':''} ${post.verified?'<span class="ms" style="font-size:15px;color:var(--green)" title="verifiziert">verified</span>':''} ${post.acct&&post.acct!=='privat'&&ACCOUNT_TYPES[post.acct]?`<span class="acct-tag"><span class="ms" style="font-size:12px">${ACCOUNT_TYPES[post.acct].ico}</span>${ACCOUNT_TYPES[post.acct].label}</span>`:''}</div>
+          <div class="post-meta">${post.time||'gerade eben'} · <span class="post-cat">${post.cat}</span></div>
+        </div>
+      </div>
+      <div class="post-body">${post.body}</div>
+      ${post.img?`<div class="post-img" style="display:grid;place-items:center"><span class="ms" style="font-size:44px;color:#fff;opacity:.7">image</span></div>`:''}
+      <div class="post-actions">
+        <button class="${liked?'liked':''}" onclick="likePost('${post.id}')"><span class="ms">favorite</span><span>${(post.likes||0)+(liked?1:0)}</span></button>
+        <button onclick="toast('Kommentare in Demo simuliert 💬')"><span class="ms">chat_bubble</span><span>${post.comments||0}</span></button>
+        <button onclick="toast('Geteilt ✓')"><span class="ms">share</span>Teilen</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function likePost(id){likedPosts[id]=!likedPosts[id];renderFeed();}
+function openCreatePost(){
+  if(USER&&USER.guest){toast('Als Gast kannst du nicht posten – bitte Profil anlegen');return;}
+  showSheet(`<div class="sheet-handle"></div><div class="sheet-body">
+    <div class="sheet-title" style="margin-bottom:16px">Beitrag schreiben</div>
+    <div class="field"><textarea id="cp-body" placeholder="Was möchtest du mit der Region teilen?" style="min-height:120px"></textarea></div>
+    <div class="field"><label>Kategorie</label><select id="cp-cat"><option>Nachbarschaft</option><option>Freizeit</option><option>Frage</option><option>Empfehlung</option><option>Verein</option></select></div>
+    <div class="field" style="display:flex;align-items:center;gap:10px;background:var(--bg);padding:13px 15px;border-radius:14px"><span class="ms" style="color:var(--green)">visibility_off</span><label style="margin:0;flex:1">Anonym posten</label><input type="checkbox" id="cp-anon" style="width:auto;transform:scale(1.3)"></div>
+    <button class="btn" id="cp-save" onclick="savePost()"><span class="ms">send</span>Veröffentlichen</button>
+  </div>`);
+}
+async function savePost(){
+  const body=document.getElementById('cp-body').value.trim();
+  if(!body){toast('Bitte schreibe etwas ✏️');return;}
+  const anon=document.getElementById('cp-anon').checked;
+  const post={anon,who:anon?'anon':'me',authorName:USER.name,authorColor:USER.color,verified:USER.verified,acct:anon?null:USER.acct,
+    cat:document.getElementById('cp-cat').value,body,img:false,likes:0,comments:0,time:'gerade eben'};
+  const btn=document.getElementById('cp-save');btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:22px;height:22px;border-width:3px"></div>';
+  if(window.FB&&window.FB.ready){
+    try{
+      const {db,collection,addDoc,serverTimestamp}=window.FB;
+      await addDoc(collection(db,'posts'),{...post,created:serverTimestamp()});
+      closeSheet();toast('Beitrag für alle veröffentlicht 🎉');return;
+    }catch(e){console.error(e);toast('Fehler – lokal gesichert');}
+  }
+  COMMUNITY.unshift({id:'l'+Date.now(),...post});renderFeed();closeSheet();toast('Beitrag veröffentlicht (lokal)');
+}
+
+/* ============ RECOMMENDATIONS ============ */
+let recFilter='Alle';
+function renderRecs(){
+  const chips=['Alle','Sehenswürdigkeit','Natur','Gastronomie','Café','Ausflugsziel','Lost Place'];
+  document.getElementById('rec-chips').innerHTML=chips.map(c=>`<div class="chip ${recFilter===c?'on':''}" onclick="recFilter='${c}';renderRecs()">${c}</div>`).join('');
+  document.getElementById('rec-list').innerHTML=RECS.filter(r=>recFilter==='Alle'||r.cat===recFilter).map(r=>`
+    <div class="rec-card">
+      <div style="position:relative"><div class="rec-img" style="background:linear-gradient(135deg,${r.color},${shade(r.color)});display:grid;place-items:center"><span class="ms" style="font-size:52px;color:#fff;opacity:.85">${r.ico}</span></div>
+      <div class="rec-badge">${r.cat}</div></div>
+      <div class="rec-info">
+        <div class="rec-title">${r.t}<span class="rec-rating"><span class="ms" style="font-size:15px">star</span>${r.rating}</span></div>
+        <div class="rec-desc">${r.desc}</div>
+        <div class="rec-foot"><span><span class="ms" style="font-size:16px">location_on</span>${r.loc}</span><span><span class="ms" style="font-size:16px">schedule</span>${r.open}</span></div>
+        <button class="btn secondary" style="margin-top:12px" onclick="toast('Navigation gestartet 🧭')"><span class="ms">directions</span>Route</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ============ PORTAL ============ */
+function portalTab(t,btn){
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  document.getElementById('portal-issues').style.display=t==='issues'?'block':'none';
+  document.getElementById('portal-official').style.display=t==='official'?'block':'none';
+}
+const STATUS={neu:['st-neu','Neu'],prog:['st-prog','In Bearbeitung'],done:['st-done','Erledigt']};
+function renderIssues(){
+  document.getElementById('issue-list').innerHTML=ISSUES.map(i=>{
+    const s=STATUS[i.status];
+    return `<div class="issue">
+      <div class="issue-top"><div class="issue-title">${i.t}</div><span class="status ${s[0]}">${s[1]}</span></div>
+      <div class="issue-meta"><span class="ms" style="font-size:15px">sell</span>${i.cat} · <span class="ms" style="font-size:15px">location_on</span>${i.loc}</div>
+      <div class="issue-desc">${i.desc}</div>
+      <div class="vote">
+        <button class="up ${i.myvote==='up'?'on':''}" onclick="vote('${i.id}','up')"><span class="ms">thumb_up</span>${i.up}</button>
+        <button class="down ${i.myvote==='down'?'on':''}" onclick="vote('${i.id}','down')"><span class="ms">thumb_down</span>${i.down}</button>
+        <button style="margin-left:auto;border:none;background:none;color:var(--muted)" onclick="toast('Kommentare in Demo simuliert')"><span class="ms">chat_bubble</span></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function vote(id,dir){
+  const i=ISSUES.find(x=>String(x.id)===String(id));
+  if(i.myvote===dir){i[dir]--;i.myvote=null;}else{if(i.myvote)i[i.myvote]--;i[dir]++;i.myvote=dir;}
+  renderIssues();
+}
+function renderOfficial(){
+  document.getElementById('portal-official').innerHTML='<div style="padding-top:10px"></div>'+OFFICIAL.map(o=>`
+    <div class="official">
+      <div class="official-tag"><span class="ms" style="font-size:15px">${o.ico}</span>Amtliche Information</div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:4px">${o.t}</div>
+      <div style="font-size:13.5px;color:var(--muted);line-height:1.5;margin-bottom:6px">${o.body}</div>
+      <div style="font-size:12px;color:var(--muted)">${o.time}</div>
+    </div>`).join('');
+}
+function openCreateIssue(){
+  if(USER&&USER.guest){toast('Als Gast kannst du keine Anliegen melden – bitte Profil anlegen');return;}
+  const cats=['Straße','Beleuchtung','Müll','Spielplatz','Radweg','Nahverkehr','Sonstiges'];
+  showSheet(`<div class="sheet-handle"></div><div class="sheet-body">
+    <div class="sheet-title" style="margin-bottom:16px">Anliegen melden</div>
+    <div class="field"><label>Titel</label><input id="ni-title" placeholder="Kurz und klar"></div>
+    <div class="field"><label>Kategorie</label><select id="ni-cat">${cats.map(c=>`<option>${c}</option>`).join('')}</select></div>
+    <div class="field"><label>Beschreibung</label><textarea id="ni-desc" placeholder="Beschreibe das Anliegen genauer"></textarea></div>
+    <div class="field"><label>Standort</label><input id="ni-loc" placeholder="Wo befindet sich das Problem?"></div>
+    <div class="field"><label>Foto</label><div class="imgdrop" onclick="toast('Foto-Upload simuliert 📷')"><span class="ms" style="font-size:32px">add_a_photo</span><div style="margin-top:6px">Foto hinzufügen</div></div></div>
+    <button class="btn" onclick="saveIssue()"><span class="ms">campaign</span>Anliegen einreichen</button>
+  </div>`);
+}
+function saveIssue(){
+  const t=document.getElementById('ni-title').value.trim();
+  if(!t){toast('Bitte gib einen Titel ein');return;}
+  ISSUES.unshift({id:'l'+Date.now(),t,cat:document.getElementById('ni-cat').value,status:'neu',desc:document.getElementById('ni-desc').value||'—',loc:document.getElementById('ni-loc').value||'Elbe Valley',up:1,down:0,myvote:'up',who:'me'});
+  renderIssues();closeSheet();toast('Anliegen eingereicht ✓ Der Landkreis wurde informiert');
+}
+
+/* ============ PROFILE ============ */
+function renderProfile(){
+  const u=USER||{name:'Gast',loc:'Region',initials:'G',color:'#90A4AE',verified:false,guest:true};
+  const myPins=PINS.filter(p=>p.host==='me').length;
+  const myPosts=COMMUNITY.filter(c=>c.who==='me').length;
+  document.getElementById('s-profile').innerHTML=`
+    <div class="prof-head">
+      <div class="prof-avatar" style="color:${u.color}">${u.initials}</div>
+      <div class="prof-name">${u.name} ${u.verified?'<span class="verified"><span class="ms" style="font-size:14px">verified</span>Verifiziert</span>':''}</div>
+      <div class="prof-loc"><span class="ms" style="font-size:17px">location_on</span>${u.loc}</div>
+      ${u.acct&&!u.guest?`<div class="prof-loc" style="margin-top:6px"><span class="verified" style="background:rgba(255,255,255,.25)"><span class="ms" style="font-size:14px">${ACCOUNT_TYPES[u.acct].ico}</span>${ACCOUNT_TYPES[u.acct].label}</span>${u.email?`<span style="font-size:13px;opacity:.85;margin-left:8px"><span class="ms" style="font-size:14px;vertical-align:-2px">mail</span> ${u.email}</span>`:''}</div>`:''}
+    </div>
+    <div class="prof-stats">
+      <div class="stat"><b>${myPins}</b><span>Aktivitäten</span></div>
+      <div class="stat"><b>${Object.keys(joinedReqs).length}</b><span>Teilnahmen</span></div>
+      <div class="stat"><b>${myPosts}</b><span>Beiträge</span></div>
+    </div>
+    ${u.guest?`<div class="pad"><div class="card" style="padding:18px;text-align:center"><span class="ms" style="font-size:40px;color:var(--green)">person_add</span><div style="font-weight:700;margin:8px 0 4px">Erstelle dein Profil</div><div style="font-size:13px;color:var(--muted);margin-bottom:14px">Als Gast kannst du nur schauen. Mit einem Profil kannst du Pins und Beiträge erstellen.</div><button class="btn" style="margin:0" onclick="logout()">Jetzt Profil erstellen</button></div></div>`:`
+    <div class="sec-title" style="font-size:15px">Interessen</div>
+    <div class="interests"><span class="int-chip">🥾 Wandern</span><span class="int-chip">📷 Fotografie</span><span class="int-chip">🌿 Natur</span><span class="int-chip">🚴 Radfahren</span></div>`}
+    <div class="sec-title" style="font-size:15px">Mein Bereich</div>
+    <div style="margin-bottom:16px">
+      <div class="menu-item" onclick="toast('Deine Aktivitäten')"><span class="ms">event</span><div class="txt">Eigene Aktivitäten</div><span class="ms">chevron_right</span></div>
+      <div class="menu-item" onclick="toast('Gespeicherte Pins')"><span class="ms">bookmark</span><div class="txt">Gespeicherte Pins</div><span class="ms">chevron_right</span></div>
+      <div class="menu-item" onclick="toast('Deine Anfragen')"><span class="ms">group_add</span><div class="txt">Meine Anfragen</div><span class="ms">chevron_right</span></div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div class="menu-item" onclick="openAdmin()"><span class="ms">shield_person</span><div class="txt">Admin-Panel</div><span class="ms">chevron_right</span></div>
+      <div class="menu-item" onclick="toast('Einstellungen')"><span class="ms">settings</span><div class="txt">Einstellungen</div><span class="ms">chevron_right</span></div>
+      <div class="menu-item" onclick="logout()"><span class="ms" style="color:#E53935!important">logout</span><div class="txt" style="color:#E53935">Abmelden</div></div>
+    </div>`;
+}
+function logout(){document.getElementById('login').classList.remove('hide');loginHome();closeSheet();}
+
+/* ============ ADMIN ============ */
+function openAdmin(){
+  showSheet(`<div class="sheet-handle"></div><div class="sheet-body">
+    <span class="sheet-cat" style="background:#5E35B122;color:#5E35B1"><span class="ms" style="font-size:15px">shield_person</span>Admin-Bereich</span>
+    <div class="sheet-title" style="margin-bottom:4px">Verwaltung</div>
+    <p style="color:var(--muted);font-size:13.5px;margin-bottom:16px">Moderation & Veröffentlichung für Gemeinde-Admins</p>
+    <div class="stat" style="margin-bottom:8px;text-align:left;padding:16px"><div style="display:flex;gap:14px;flex-wrap:wrap">
+      <div><b style="color:var(--green);font-size:20px">${PINS.length}</b><div style="font-size:11px;color:var(--muted)">Pins</div></div>
+      <div><b style="color:var(--green);font-size:20px">${COMMUNITY.length}</b><div style="font-size:11px;color:var(--muted)">Beiträge</div></div>
+      <div><b style="color:var(--green);font-size:20px">${ISSUES.length}</b><div style="font-size:11px;color:var(--muted)">Anliegen</div></div>
+      <div><b style="color:var(--green);font-size:20px">${OFFICIAL.length}</b><div style="font-size:11px;color:var(--muted)">Amtl. Infos</div></div>
+    </div></div>
+    <div class="menu-item" style="border-radius:14px;margin:0 0 8px;border:1px solid var(--line)" onclick="closeSheet();go('map',document.querySelector('#nav button'));toast('Pins moderieren: auf Karte antippen')"><span class="ms">wrong_location</span><div class="txt">Pins moderieren</div><span class="ms">chevron_right</span></div>
+    <div class="menu-item" style="border-radius:14px;margin:0 0 8px;border:1px solid var(--line)" onclick="toast('Beitrag zur Prüfung markiert')"><span class="ms">flag</span><div class="txt">Beiträge moderieren</div><span class="ms">chevron_right</span></div>
+    <div class="menu-item" style="border-radius:14px;margin:0 0 8px;border:1px solid var(--line)" onclick="closeSheet();go('portal',document.querySelectorAll('#nav button')[3]);toast('Anliegen-Status ändern')"><span class="ms">fact_check</span><div class="txt">Bürgeranliegen verwalten</div><span class="ms">chevron_right</span></div>
+    <div class="menu-item" style="border-radius:14px;margin:0;border:1px solid var(--line)" onclick="publishOfficial()"><span class="ms">campaign</span><div class="txt">Amtliche Info veröffentlichen</div><span class="ms">chevron_right</span></div>
+  </div>`);
+}
+function publishOfficial(){
+  showSheet(`<div class="sheet-handle"></div><div class="sheet-body">
+    <div class="sheet-title" style="margin-bottom:16px">Amtliche Info veröffentlichen</div>
+    <div class="field"><label>Titel</label><input id="of-title" placeholder="z.B. Straßensperrung"></div>
+    <div class="field"><label>Meldung</label><textarea id="of-body" placeholder="Details der Mitteilung"></textarea></div>
+    <div class="field"><label>Typ</label><select id="of-type"><option value="construction">Baustelle</option><option value="warning">Warnmeldung</option><option value="celebration">Veranstaltung</option><option value="info">Mitteilung</option></select></div>
+    <button class="btn" onclick="saveOfficial()"><span class="ms">publish</span>Veröffentlichen</button>
+  </div>`);
+}
+function saveOfficial(){
+  const t=document.getElementById('of-title').value.trim();
+  if(!t){toast('Bitte Titel eingeben');return;}
+  const colors={construction:'#E67E00',warning:'#C62828',celebration:'#2E7D32',info:'#1565C0'};
+  const type=document.getElementById('of-type').value;
+  OFFICIAL.unshift({ico:type==='info'?'info':type,t,body:document.getElementById('of-body').value||'—',time:'gerade eben',color:colors[type]});
+  renderOfficial();closeSheet();toast('Amtliche Info veröffentlicht 📢');
+  go('portal',document.querySelectorAll('#nav button')[3]);document.querySelectorAll('.seg button')[1].click();
+}
+
+/* ============ NOTIFS ============ */
+function openNotifs(){
+  document.getElementById('notif-dot').style.display='none';
+  showSheet(`<div class="sheet-handle"></div>
+    <div style="padding:8px 18px 4px"><div class="sheet-title">Benachrichtigungen</div></div>
+    ${NOTIFS.map(n=>`<div class="notif ${n.unread?'unread':''}"><div class="notif-ico" style="background:${n.color}"><span class="ms">${n.ico}</span></div><div class="notif-txt">${n.txt}<div class="notif-time">${n.time}</div></div></div>`).join('')}
+    <div style="height:20px"></div>`);
+}
+
+/* ============ HELPERS ============ */
+function showSheet(html){document.getElementById('sheet').innerHTML=html;document.getElementById('overlay').classList.add('show');}
+function closeSheet(){document.getElementById('overlay').classList.remove('show');}
+function toast(msg){const t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
+function shade(hex){const n=parseInt(hex.slice(1),16);let r=(n>>16)-30,g=((n>>8)&255)-30,b=(n&255)-30;r=Math.max(0,r);g=Math.max(0,g);b=Math.max(0,b);return'#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');}
+function renderAll(){renderFeed();renderRecs();renderIssues();renderOfficial();renderProfile();}
+</script>
+</body>
+</html>
