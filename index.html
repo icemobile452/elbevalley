@@ -41,12 +41,15 @@
   .nav button.on .ms{font-variation-settings:'FILL' 1;transform:translateY(-1px)}
   #map{width:100%;flex:1;min-height:300px;z-index:1}
   .map-wrap{flex:1;position:relative;display:flex;flex-direction:column}
-  .map-search{position:absolute;top:12px;left:12px;right:12px;z-index:10;display:flex;gap:8px}
-  .map-search input{flex:1;border:none;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-radius:14px;padding:13px 16px;font-family:inherit;font-size:14px;box-shadow:var(--shadow-lg);outline:none}
-  .filterbtn{background:var(--green);color:#fff;border:none;border-radius:14px;padding:0 16px;display:flex;align-items:center;gap:6px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;box-shadow:var(--shadow-lg)}
-  .chips{position:absolute;top:64px;left:0;right:0;z-index:10;display:flex;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none}
+  .map-controls{background:var(--bg);padding:12px 14px 10px;border-bottom:1px solid var(--line);z-index:15}
+  .map-search{display:flex;gap:8px;margin-bottom:10px}
+  .map-search input{flex:1;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:13px 16px;font-family:inherit;font-size:14px;box-shadow:var(--shadow);outline:none}
+  .filterbtn{background:var(--green);color:#fff;border:none;border-radius:14px;padding:0 16px;display:flex;align-items:center;gap:6px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;box-shadow:var(--shadow)}
+  .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
-  .chip{white-space:nowrap;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;gap:5px;transition:.2s}
+  .chips-bar{position:sticky;top:0;z-index:15;display:flex;gap:8px;padding:10px 14px;overflow-x:auto;scrollbar-width:none;background:var(--bg);border-bottom:1px solid var(--line)}
+  .chips-bar::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;gap:5px;transition:.2s}
   .chip.on{background:var(--green);color:#fff;border-color:var(--green)}
   .chip .ms{font-size:16px}
   .fab{position:absolute;right:16px;bottom:24px;z-index:10;width:60px;height:60px;border-radius:50%;background:var(--green);color:#fff;border:none;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 20px rgba(46,125,50,.4);transition:.2s}
@@ -217,7 +220,6 @@
       <div class="login-btns">
         <button class="lbtn primary" onclick="showRegister()"><span class="ms">person_add</span>Profil erstellen</button>
         <button class="lbtn ghost" onclick="showLogin()"><span class="ms">login</span>Anmelden</button>
-        <button class="lbtn text" onclick="enterAsGuest()">Als Gast fortfahren →</button>
       </div>
     </div>
 
@@ -266,8 +268,6 @@
         <div class="login-field"><label>Dein Name</label><input id="signin-name" placeholder="Wie du dich registriert hast"></div>
         <button class="lbtn primary" onclick="doSignin()"><span class="ms">login</span>Anmelden</button>
         <p style="font-size:12px;opacity:.7;margin-top:14px;text-align:center">Gib denselben Namen ein, mit dem du dein Profil erstellt hast.</p>
-
-        <!-- DEMO ACCOUNTS -->
         <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,.2);padding-top:22px">
           <p style="font-size:12px;font-weight:700;opacity:.8;text-align:center;margin-bottom:14px;letter-spacing:.5px;text-transform:uppercase">🎭 Workshop Demo-Accounts</p>
           <div style="display:flex;flex-direction:column;gap:9px" id="demo-accounts"></div>
@@ -284,17 +284,19 @@
     </div>
     <div class="hdr-actions">
       <button class="iconbtn" onclick="openNotifs()"><span class="ms">notifications</span><span class="badge-dot" id="notif-dot"></span></button>
-      <button class="iconbtn" onclick="openAdmin()" title="Admin"><span class="ms">shield_person</span></button>
+      <button class="iconbtn" id="admin-hdr-btn" onclick="openAdmin()" title="Admin" style="display:none"><span class="ms">shield_person</span></button>
     </div>
   </div>
 
   <div class="screen active" id="s-map">
     <div class="map-wrap">
-      <div class="map-search">
-        <input placeholder="Ort oder Aktivität suchen…" onfocus="this.blur();toast('Suche in der Demo deaktiviert')">
-        <button class="filterbtn" onclick="openFilters()"><span class="ms">tune</span>Filter</button>
+      <div class="map-controls">
+        <div class="map-search">
+          <input placeholder="Ort oder Aktivität suchen…" onfocus="this.blur();toast('Suche in der Demo deaktiviert')">
+          <button class="filterbtn" onclick="openFilters()"><span class="ms">tune</span>Filter</button>
+        </div>
+        <div class="chips" id="map-chips"></div>
       </div>
-      <div class="chips" id="map-chips"></div>
       <div id="map"></div>
       <button class="fab" onclick="openCreatePin()"><span class="ms">add_location_alt</span></button>
     </div>
@@ -302,11 +304,12 @@
 
   <div class="screen" id="s-community">
     <div style="padding:14px 18px 4px"><button class="btn" style="margin:0" onclick="openCreatePost()"><span class="ms">edit</span>Beitrag schreiben</button></div>
+    <div class="chips-bar" id="feed-chips"></div>
     <div id="feed"></div>
   </div>
 
   <div class="screen" id="s-rec">
-    <div class="chips" style="position:static;padding:14px 12px 4px" id="rec-chips"></div>
+    <div class="chips-bar" id="rec-chips"></div>
     <div id="rec-list"></div>
   </div>
 
@@ -343,10 +346,7 @@
 <!--  FIREBASE  –  HIER EURE ZUGANGSDATEN EINSETZEN                 -->
 <!-- ============================================================= -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
-
+  /* ▼▼▼▼▼  EUREN firebaseConfig-BLOCK HIER EINFÜGEN (nur nötig für geteilte Daten)  ▼▼▼▼▼ */
   const firebaseConfig = {
     apiKey: "AIzaSyAabGPsYOhuKEhXKX8EHZrHrVybzYdBBR0",
     authDomain: "elbevalley-e5173.firebaseapp.com",
@@ -355,35 +355,41 @@
     messagingSenderId: "4145726672",
     appId: "1:4145726672:web:668947a168d9ed9f99cad5"
   };
-
-  // Prüfen ob Config eingesetzt wurde
-  const configReady = firebaseConfig.projectId && firebaseConfig.apiKey;
+  /* ▲▲▲▲▲  ENDE firebaseConfig  ▲▲▲▲▲ */
 
   window.FB = { ready:false };
+  const configReady = firebaseConfig.projectId && firebaseConfig.apiKey;
 
-  if(configReady){
-    try{
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      window.FB = {
-        ready:true, db, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp
-      };
-      document.getElementById('fb-status').className='fb-status live';
-      document.getElementById('fb-status').textContent='🟢 Live verbunden – Daten werden geteilt';
-    }catch(e){
-      console.error('Firebase-Fehler:',e);
-      showLocalBanner();
-    }
-  } else {
-    showLocalBanner();
-  }
   function showLocalBanner(){
     const el=document.getElementById('fb-status');
-    el.className='fb-status local';
-    el.textContent='⚠️ Lokaler Demo-Modus – Firebase-Config noch nicht eingesetzt';
+    el.className='fb-status live';
+    el.textContent='🟢 Bereit – lokaler Modus';
+    window.dispatchEvent(new Event('fb-init-done'));
   }
-  // App starten, sobald Firebase-Status feststeht
-  window.dispatchEvent(new Event('fb-init-done'));
+
+  if(configReady){
+    // Firebase nur laden, wenn eine Config eingesetzt wurde
+    (async()=>{
+      try{
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js");
+        const { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp }
+          = await import("https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js");
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        window.FB = { ready:true, db, collection, addDoc, onSnapshot, doc, updateDoc, query, orderBy, serverTimestamp };
+        const el=document.getElementById('fb-status');
+        el.className='fb-status live';
+        el.textContent='🟢 Live verbunden – Daten werden geteilt';
+        window.dispatchEvent(new Event('fb-init-done'));
+      }catch(e){
+        console.error('Firebase-Fehler:',e);
+        showLocalBanner();
+      }
+    })();
+  } else {
+    // Lokaler Modus – gar keine externe Ladung nötig
+    showLocalBanner();
+  }
 </script>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -414,6 +420,13 @@ const P = {
   petra:{n:'Petra Wolf',c:'#5E35B1',i:'PW'}, gasthof:{n:'Gasthof zur Elbe',c:'#6D4C41',i:'GE'},
   verein:{n:'SV Elbaue e.V.',c:'#00897B',i:'SV'}, gemeinde:{n:'Gemeinde Bleckede',c:'#2E7D32',i:'GB'},
   klaus:{n:'Klaus Richter',c:'#455A64',i:'KR'}, sarah:{n:'Sarah Vogt',c:'#D81B60',i:'SV'},
+  bernd:{n:'Bernd Stahl',c:'#3949AB',i:'BS'}, nina:{n:'Nina Albrecht',c:'#00897B',i:'NA'},
+  hans:{n:'Hans Ulbrich',c:'#6D4C41',i:'HU'}, katrin:{n:'Katrin Mohr',c:'#8E24AA',i:'KM'},
+  finn:{n:'Finn Bergmann',c:'#1976D2',i:'FB'}, ulla:{n:'Ulla Dietrich',c:'#C2185B',i:'UD'},
+  ole:{n:'Ole Petersen',c:'#E64A19',i:'OP'}, greta:{n:'Greta Hansen',c:'#43A047',i:'GH'},
+  feuerwehr:{n:'FF Bleckede',c:'#C62828',i:'FF'}, hofladen:{n:'Hofladen Darchau',c:'#F9A825',i:'HD'},
+  kita:{n:'Kita Elbspatzen',c:'#D81B60',i:'KE'}, radteam:{n:'Radteam Elbaue',c:'#00897B',i:'RE'},
+  imker:{n:'Imkerei Sommer',c:'#F9A825',i:'IS'}, buecherei:{n:'Bücherei Bleckede',c:'#5E35B1',i:'BB'},
 };
 const SEED_PINS = [
   {id:'seed1',cat:'schuetzen',pub:true,t:'Schützenfest Bleckede',lat:53.288,lng:10.732,host:'verein',date:'Sa. 12. Juli',time:'14:00',desc:'Traditionelles Schützenfest mit Festumzug, Blaskapelle und Festzelt. Für die ganze Familie!',loc:'Festplatz Bleckede',free:false,interested:87},
@@ -428,6 +441,24 @@ const SEED_PINS = [
   {id:'seed10',cat:'natur',pub:true,t:'Biosphärenreservat Flusslandschaft',lat:53.18,lng:10.95,host:'gemeinde',date:'Ganzjährig',time:'—',desc:'UNESCO-Biosphärenreservat mit Störchen, Auwäldern und seltenen Vögeln. Beobachtungstürme frei zugänglich.',loc:'Elbtalaue',free:true,interested:34},
   {id:'seed11',cat:'vereine',pub:false,t:'Chorprobe – Neue Stimmen gesucht',lat:53.287,lng:10.735,host:'petra',date:'Do. 10. Juli',time:'19:30',desc:'Der Gemeindechor sucht Verstärkung! Keine Vorkenntnisse nötig, einfach vorbeikommen.',loc:'Gemeindehaus Bleckede',limit:30,joined:18,free:true},
   {id:'seed12',cat:'kultur',pub:true,t:'Sommerkonzert am Elbufer',lat:53.246,lng:10.556,host:'gemeinde',date:'Sa. 26. Juli',time:'19:00',desc:'Open-Air-Klassikkonzert bei Sonnenuntergang. Decke und Picknick mitbringen.',loc:'Elbwiese Lauenburg',free:false,interested:98},
+  {id:'seed13',cat:'schuetzen',pub:true,t:'Schützenfest Dahlenburg',lat:53.196,lng:10.744,host:'verein',date:'Sa. 2. August',time:'13:00',desc:'Großes Schützenfest mit Königsschießen, Festumzug und Tanz in der Festscheune bis Mitternacht.',loc:'Schützenplatz Dahlenburg',free:false,interested:112},
+  {id:'seed14',cat:'floh',pub:true,t:'Flohmarkt am Elbdeich',lat:53.29,lng:10.74,host:'gemeinde',date:'So. 20. Juli',time:'9–16',desc:'Riesiger Trödelmarkt entlang des Deichs. Über 80 Stände mit Antiquitäten, Kleidung und Krimskrams.',loc:'Elbdeich Bleckede',free:true,interested:67},
+  {id:'seed15',cat:'grillen',pub:false,t:'Vegetarisches Grillen im Park',lat:53.283,lng:10.728,host:'nina',date:'Sa. 12. Juli',time:'17:00',desc:'Fleischfrei genießen! Wir grillen Gemüse, Halloumi und Veggie-Würstchen. Jeder bringt etwas mit.',loc:'Stadtpark Bleckede',limit:15,joined:8,free:true},
+  {id:'seed16',cat:'wandern',pub:false,t:'Pilzwanderung mit Experten',lat:53.32,lng:10.69,host:'hans',date:'So. 21. September',time:'09:00',desc:'Geführte Wanderung durch den Auwald. Lernt essbare von giftigen Pilzen zu unterscheiden!',loc:'Waldparkplatz Nord',limit:12,joined:6,free:false},
+  {id:'seed17',cat:'sport',pub:false,t:'Morgen-Yoga am Fluss',lat:53.287,lng:10.752,host:'katrin',date:'Jeden Dienstag',time:'07:30',desc:'Starte entspannt in den Tag mit Yoga direkt am Elbufer. Matte mitbringen, alle Levels willkommen.',loc:'Elbwiese Ost',limit:20,joined:14,free:true},
+  {id:'seed18',cat:'dorffest',pub:true,t:'Erntedankfest Neu Darchau',lat:53.231,lng:10.885,host:'gemeinde',date:'So. 5. Oktober',time:'11:00',desc:'Traditionelles Erntedankfest mit Umzug, regionalen Spezialitäten und Livemusik der Kapelle.',loc:'Dorfmitte Neu Darchau',free:true,interested:89},
+  {id:'seed19',cat:'kultur',pub:true,t:'Lesung in der Bücherei',lat:53.286,lng:10.734,host:'buecherei',date:'Fr. 18. Juli',time:'19:30',desc:'Autorenlesung mit anschließendem Gespräch. Regionale Krimis von Nordlicht-Autorin Meike Ross.',loc:'Bücherei Bleckede',free:true,interested:31},
+  {id:'seed20',cat:'markt',pub:true,t:'Bauernmarkt Bleckede',lat:53.288,lng:10.736,host:'hofladen',date:'Jeden Mittwoch',time:'14–18',desc:'Frisches Gemüse, Eier, Honig und Backwaren direkt vom Erzeuger. Unterstützt regionale Höfe!',loc:'Marktplatz Bleckede',free:true,interested:45},
+  {id:'seed21',cat:'vereine',pub:false,t:'Anfänger-Angeln am See',lat:53.26,lng:10.81,host:'ole',date:'Sa. 19. Juli',time:'06:00',desc:'Der Angelverein zeigt Neulingen die Grundlagen. Ausrüstung wird gestellt, Tageskarte inklusive.',loc:'Baggersee Dahlenburg',limit:8,joined:3,free:false},
+  {id:'seed22',cat:'nachbar',pub:false,t:'Nachbarschafts-Reparaturcafé',lat:53.284,lng:10.731,host:'bernd',date:'Sa. 26. Juli',time:'10:00',desc:'Bring kaputte Geräte mit — gemeinsam reparieren wir statt wegzuwerfen. Werkzeug und Kaffee vorhanden.',loc:'Gemeindehaus Bleckede',limit:25,joined:11,free:true},
+  {id:'seed23',cat:'fahrrad',pub:false,t:'Feierabend-Radeln für Familien',lat:53.278,lng:10.76,host:'radteam',date:'Jeden Freitag',time:'17:30',desc:'Gemütliche Familienrunde von 15km auf ebenen Wegen. Kindersitze und Anhänger kein Problem!',loc:'Marktplatz Bleckede',limit:30,joined:19,free:true},
+  {id:'seed24',cat:'kultur',pub:true,t:'Feuerwehrfest mit Livemusik',lat:53.285,lng:10.727,host:'feuerwehr',date:'Sa. 9. August',time:'15:00',desc:'Tag der offenen Tür bei der Feuerwehr mit Fahrzeugschau, Hüpfburg, Grill und Band am Abend.',loc:'Feuerwehrhaus Bleckede',free:true,interested:134},
+  {id:'seed25',cat:'natur',pub:false,t:'Vogelbeobachtung Storchennest',lat:53.19,lng:10.94,host:'greta',date:'So. 13. Juli',time:'07:00',desc:'Frühe Vogelbeobachtung im Biosphärenreservat. Fernglas mitbringen — Weißstörche garantiert!',loc:'Beobachtungsturm Elbtalaue',limit:10,joined:5,free:true},
+  {id:'seed26',cat:'gastro',pub:true,t:'Hoffest Imkerei Sommer',lat:53.24,lng:10.87,host:'imker',date:'Sa. 16. August',time:'12:00',desc:'Honigschleudern zum Zuschauen, Verkostung frischer Sorten und Kaffee & Kuchen im Bauerngarten.',loc:'Imkerei Sommer, Darchau',free:true,interested:52},
+  {id:'seed27',cat:'sport',pub:false,t:'Lauftreff für Einsteiger',lat:53.281,lng:10.723,host:'finn',date:'Jeden Montag',time:'18:30',desc:'Gemeinsam vom Sofa zum ersten 5km-Lauf. Wir laufen langsam und nehmen jeden mit. Los geht\'s!',loc:'Sportplatz Bleckede',limit:20,joined:13,free:true},
+  {id:'seed28',cat:'vereine',pub:false,t:'Bastelnachmittag für Kinder',lat:53.289,lng:10.739,host:'kita',date:'Mi. 16. Juli',time:'15:00',desc:'Kreatives Basteln mit Naturmaterialien für Kinder von 4–10 Jahren. Eltern willkommen zum Kaffee.',loc:'Kita Elbspatzen',limit:16,joined:9,free:true},
+  {id:'seed29',cat:'floh',pub:true,t:'Kinder-Kleiderbasar',lat:53.196,lng:10.746,host:'kita',date:'Sa. 23. August',time:'10–14',desc:'Gut erhaltene Kinderkleidung, Spielzeug und Bücher. Der Erlös kommt der Kita zugute.',loc:'Turnhalle Dahlenburg',free:true,interested:38},
+  {id:'seed30',cat:'lost',pub:false,t:'Nachtfotografie alte Mühle',lat:53.31,lng:10.72,host:'klaus',date:'Sa. 2. August',time:'21:00',desc:'Fortgeschrittene Fototour bei Nacht. Wir fangen die verlassene Wassermühle im Mondlicht ein. Stativ nötig!',loc:'Treffpunkt nach Zusage',limit:5,joined:2,free:true},
 ];
 const SEED_COMMUNITY = [
   {id:'sc1',who:'maria',anon:false,cat:'Nachbarschaft',time:'vor 2 Std',body:'Hat jemand Lust, eine Fahrgemeinschaft zum Wochenmarkt nach Hitzacker zu bilden? Samstags früh, fahre eh mit dem Auto und habe 3 Plätze frei! 🚗',img:false,likes:24,comments:8},
@@ -435,6 +466,15 @@ const SEED_COMMUNITY = [
   {id:'sc3',who:'anon',anon:true,cat:'Frage',time:'vor 6 Std',body:'Gibt es hier eigentlich einen guten Fahrradladen in der Nähe? Meins muss dringend repariert werden und ich bin neu zugezogen.',img:false,likes:12,comments:11},
   {id:'sc4',who:'petra',anon:false,cat:'Verein',time:'gestern',body:'Unser Chor sucht weiter neue Stimmen! 🎶 Besonders Männerstimmen sind herzlich willkommen. Donnerstags um 19:30 im Gemeindehaus. Kommt einfach vorbei!',img:false,likes:41,comments:6},
   {id:'sc5',who:'klaus',anon:false,cat:'Fotografie',time:'gestern',body:'Kleine Fototour durch die alte Ziegelei letztes Wochenende. Die Natur holt sich alles zurück. Wer Interesse an Lost-Place-Fotografie hat, meldet sich!',img:true,likes:89,comments:22},
+  {id:'sc6',who:'sarah',anon:false,cat:'Empfehlung',time:'vor 2 Tagen',body:'Der neue Hofladen bei Neu Darchau ist ein Traum! Frische Eier, selbstgemachte Marmelade und der netteste Besitzer. Unbedingt unterstützen! 🥚🍯',img:false,likes:53,comments:9},
+  {id:'sc7',who:'nina',anon:false,cat:'Freizeit',time:'vor 2 Tagen',body:'Wer hat Lust auf einen spontanen Spieleabend am Samstag? Ich bringe Brettspiele mit, wir treffen uns bei mir auf der Terrasse. Meldet euch! 🎲',img:false,likes:34,comments:17},
+  {id:'sc8',who:'bernd',anon:false,cat:'Nachbarschaft',time:'vor 3 Tagen',body:'Kann mir jemand kurz mit einer Bohrmaschine aushelfen? Nur für eine Stunde am Wochenende, ich komme gern vorbei. Danke schonmal an die tolle Nachbarschaft! 🔧',img:false,likes:19,comments:13},
+  {id:'sc9',who:'hans',anon:false,cat:'Frage',time:'vor 3 Tagen',body:'Weiß jemand, ob der Wochenmarkt am Feiertag stattfindet? Wollte eigentlich frisches Gemüse holen.',img:false,likes:8,comments:5},
+  {id:'sc10',who:'katrin',anon:false,cat:'Freizeit',time:'vor 4 Tagen',body:'Unser Morgen-Yoga am Fluss war heute wieder magisch. ☀️🧘 Jeden Dienstag um 7:30 – kommt vorbei, die ersten Sonnenstrahlen über der Elbe sind unbeschreiblich!',img:true,likes:76,comments:11},
+  {id:'sc11',who:'feuerwehr',anon:false,cat:'Verein',time:'vor 4 Tagen',body:'Unser Feuerwehrfest am 9. August wirft seine Schatten voraus! 🚒 Es gibt Fahrzeugschau, Hüpfburg für die Kleinen und abends Livemusik. Wir freuen uns auf euch!',img:false,likes:97,comments:14},
+  {id:'sc12',who:'ulla',anon:false,cat:'Empfehlung',time:'vor 5 Tagen',body:'Kleiner Geheimtipp: Die Elbberge bei Sonnenuntergang! Kaum jemand kennt den Aussichtspunkt, aber der Blick über das ganze Tal ist unschlagbar. 🌅',img:true,likes:64,comments:8},
+  {id:'sc13',who:'anon',anon:true,cat:'Frage',time:'vor 5 Tagen',body:'Ich bin neu in der Region und suche Anschluss. Gibt es Gruppen oder Treffen für Leute in ihren 30ern? Fühle mich noch etwas verloren hier...',img:false,likes:47,comments:26},
+  {id:'sc14',who:'greta',anon:false,cat:'Freizeit',time:'vor 6 Tagen',body:'Die Störche sind zurück am Nest bei der Elbtalaue! 🐦 Wer Lust hat, sie zu beobachten – ich organisiere Sonntag früh eine kleine Tour zum Beobachtungsturm.',img:true,likes:58,comments:12},
 ];
 const RECS = [
   {cat:'Sehenswürdigkeit',t:'Altstadt Hitzacker',ico:'photo_camera',rating:4.8,desc:'Malerische Fachwerk-Inselstadt an der Jeetzel. Perfekt für einen Bummel und Kaffee am Wasser.',loc:'Hitzacker',open:'Immer geöffnet',color:'#0097A7'},
@@ -451,11 +491,20 @@ let ISSUES = [
   {id:'si4',t:'Spielplatz-Sanierung gewünscht',cat:'Spielplatz',status:'prog',desc:'Die Schaukeln sind kaputt und der Sand müsste erneuert werden. Unsere Kinder würden sich sehr freuen.',loc:'Spielplatz Rosenweg',up:47,down:2,myvote:null,who:'sarah'},
   {id:'si5',t:'Neuer Fahrradweg entlang der L221',cat:'Radweg',status:'neu',desc:'Die Landstraße ist für Radfahrer sehr gefährlich. Ein separater Radweg würde Schüler und Pendler schützen.',loc:'L221 Richtung Dahlenburg',up:78,down:6,myvote:null,who:'jonas'},
   {id:'si6',t:'Überfüllte Mülleimer am Elbufer',cat:'Müll',status:'done',desc:'Am beliebten Grillplatz quellen die Mülleimer am Wochenende über. Größere Behälter wären super.',loc:'Grillplatz am Deich',up:29,down:0,myvote:null,who:'klaus'},
+  {id:'si7',t:'Gefährliche Kreuzung ohne Ampel',cat:'Straße',status:'neu',desc:'An der Kreuzung Bahnhofstraße/Lindenweg gab es schon mehrere Beinahe-Unfälle. Eine Ampel oder ein Zebrastreifen wäre dringend nötig.',loc:'Bahnhofstraße Ecke Lindenweg',up:91,down:3,myvote:null,who:'nina'},
+  {id:'si8',t:'Wunsch nach Hundewiese',cat:'Sonstiges',status:'neu',desc:'Viele Hundebesitzer wünschen sich eine eingezäunte Freilauffläche, wo die Hunde sicher toben können.',loc:'Brachfläche am Ortsrand',up:54,down:8,myvote:null,who:'ulla'},
+  {id:'si9',t:'Baumschnitt am Radweg nötig',cat:'Radweg',status:'prog',desc:'Die Äste hängen tief über den Elberadweg und behindern besonders größere Radfahrer. Bitte zurückschneiden.',loc:'Elberadweg Abschnitt Nord',up:26,down:0,myvote:null,who:'finn'},
+  {id:'si10',t:'Öffentliches WLAN am Marktplatz',cat:'Sonstiges',status:'neu',desc:'Ein kostenloses WLAN am zentralen Marktplatz würde Bürgern und Touristen gleichermaßen helfen.',loc:'Marktplatz Bleckede',up:43,down:11,myvote:null,who:'ole'},
+  {id:'si11',t:'Bank am Aussichtspunkt erneuern',cat:'Sonstiges',status:'done',desc:'Die alte Holzbank an den Elbbergen ist morsch. Eine neue Sitzgelegenheit für die schöne Aussicht wäre toll.',loc:'Elbberge Aussichtspunkt',up:37,down:1,myvote:null,who:'greta'},
 ];
 const OFFICIAL = [
   {ico:'construction',t:'Vollsperrung Elbbrücke',time:'Aktuell',body:'Die Elbbrücke bei Bleckede ist wegen Sanierungsarbeiten vom 7.–14. Juli voll gesperrt. Umleitung über die Fähre ausgeschildert.',color:'#E67E00'},
   {ico:'warning',t:'Hochwasser-Warnung Stufe 1',time:'vor 3 Std',body:'Aufgrund anhaltender Regenfälle steigt der Elbpegel. Uferbereiche meiden. Aktuelle Pegelstände auf der Gemeindeseite.',color:'#C62828'},
   {ico:'celebration',t:'Einladung Bürgerversammlung',time:'gestern',body:'Am 18. Juli um 19 Uhr lädt die Gemeinde zur Bürgerversammlung ins Rathaus. Thema: Zukunft des Ortskerns.',color:'#2E7D32'},
+  {ico:'water_drop',t:'Wartung Trinkwassernetz',time:'vor 2 Tagen',body:'Am 22. Juli kommt es zwischen 9–12 Uhr im Bereich Nordstraße zu kurzzeitigen Unterbrechungen der Wasserversorgung.',color:'#1565C0'},
+  {ico:'recycling',t:'Geänderte Abfuhrtermine',time:'vor 3 Tagen',body:'Wegen des Feiertags verschiebt sich die Gelbe-Sack-Abfuhr um einen Tag. Bitte Tonnen entsprechend später rausstellen.',color:'#43A047'},
+  {ico:'local_hospital',t:'Neuer Hausarzt in Bleckede',time:'vor 4 Tagen',body:'Ab August eröffnet eine neue Hausarztpraxis in der Poststraße. Anmeldungen sind ab sofort telefonisch möglich.',color:'#2E7D32'},
+  {ico:'event',t:'Sommerferienprogramm gestartet',time:'vor 5 Tagen',body:'Das kostenlose Ferienprogramm für Kinder von 6–12 Jahren läuft bis Ende August. Anmeldung im Jugendzentrum.',color:'#8E24AA'},
 ];
 const NOTIFS = [
   {ico:'check_circle',color:'#2E7D32',txt:'<b>Tom Herzog</b> hat deine Anfrage für die Radtour angenommen! 🎉',time:'vor 10 Min',unread:true},
@@ -471,6 +520,7 @@ let USER=null;                       // {name, loc, initials, color, verified}
 let CURRENT_USER='Gast';
 let map, markers=[], activeFilter='alle', pendingReqs={}, joinedReqs={}, likedPosts={};
 let pendingReg={};
+let isAdmin=false;
 
 /* ============ USER / LOGIN FLOW ============ */
 function loginHome(){['main','register','verify','signin'].forEach(v=>document.getElementById('login-'+v).style.display='none');document.getElementById('login-main').style.display='block';}
@@ -515,18 +565,18 @@ function finishVerify(verified){
 }
 /* ============ DEMO ACCOUNTS ============ */
 const DEMO_USERS = [
-  {name:'Anna Müller',    loc:'Bleckede',     acct:'privat',      color:'#2E7D32', verified:true,  emoji:'👩‍🌾', role:'Bürgerin'},
-  {name:'Tom Herzog',     loc:'Hitzacker',    acct:'privat',      color:'#1976D2', verified:true,  emoji:'🚴',  role:'Radfahrer'},
-  {name:'Gasthof zur Elbe',loc:'Bleckede',   acct:'unternehmen', color:'#EF6C00', verified:true,  emoji:'🍺',  role:'Unternehmen'},
-  {name:'SV Elbaue e.V.', loc:'Bleckede',    acct:'verein',      color:'#00897B', verified:true,  emoji:'⚽',  role:'Verein'},
-  {name:'Gemeinde Bleckede',loc:'Bleckede',  acct:'institution', color:'#5E35B1', verified:true,  emoji:'🏛️', role:'Institution'},
-  {name:'Petra Wolf',     loc:'Neu Darchau', acct:'privat',      color:'#C2185B', verified:false, emoji:'🎶',  role:'Bürgerin'},
+  {name:'Anna Müller',      loc:'Bleckede',      acct:'privat',      color:'#2E7D32', verified:true,  emoji:'👩‍🌾', role:'Bürgerin'},
+  {name:'Tom Herzog',       loc:'Hitzacker',     acct:'privat',      color:'#1976D2', verified:true,  emoji:'🚴',  role:'Radfahrer'},
+  {name:'Gasthof zur Elbe', loc:'Bleckede',      acct:'unternehmen', color:'#EF6C00', verified:true,  emoji:'🍺',  role:'Unternehmen'},
+  {name:'SV Elbaue e.V.',   loc:'Bleckede',      acct:'verein',      color:'#00897B', verified:true,  emoji:'⚽',  role:'Verein'},
+  {name:'Gemeinde Bleckede',loc:'Bleckede',      acct:'institution', color:'#5E35B1', verified:true,  emoji:'🏛️', role:'Institution'},
+  {name:'Petra Wolf',       loc:'Neu Darchau',   acct:'privat',      color:'#C2185B', verified:false, emoji:'🎶',  role:'Bürgerin'},
 ];
 function renderDemoAccounts(){
   const el=document.getElementById('demo-accounts');
   if(!el)return;
   el.innerHTML=DEMO_USERS.map(u=>`
-    <button onclick="loginAsDemo(${JSON.stringify(u).replace(/"/g,'&quot;')})"
+    <button onclick='loginAsDemo(${JSON.stringify(u)})'
       style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:14px;
              padding:11px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;text-align:left;
              font-family:inherit;color:#fff;transition:.15s;width:100%"
@@ -561,6 +611,8 @@ function enterAsGuest(){
   enterApp('Als Gast angemeldet');
 }
 function enterApp(msg){
+  isAdmin=false;
+  document.getElementById('admin-hdr-btn').style.display='none';
   document.getElementById('login').classList.add('hide');
   setTimeout(()=>{ if(!map) initMap(); else map.invalidateSize(); },120);
   renderAll();
@@ -627,7 +679,7 @@ function renderMapChips(){
   });
   wrap.innerHTML=html;
 }
-function setFilter(f){activeFilter=f;renderMarkers();renderMapChips();}
+function setFilter(f){activeFilter=f;if(map)renderMarkers();renderMapChips();}
 function openFilters(){toast('Erweiterte Filter: Kategorie-Chips oben nutzen');}
 
 /* ============ PIN DETAIL ============ */
@@ -759,9 +811,20 @@ async function savePin(){
 }
 
 /* ============ COMMUNITY (mit Firebase) ============ */
+let feedFilter='Alle';
+const FEED_CATS=['Alle','Nachbarschaft','Freizeit','Frage','Empfehlung','Verein','Fotografie'];
+function renderFeedChips(){
+  const el=document.getElementById('feed-chips');
+  if(!el)return;
+  el.innerHTML=FEED_CATS.map(c=>`<div class="chip ${feedFilter===c?'on':''}" onclick="feedFilter='${c}';renderFeedChips();renderFeed()">${c}</div>`).join('');
+}
 function renderFeed(){
-  document.getElementById('feed').innerHTML=COMMUNITY.map(post=>{
-    const u=post.anon?{n:'Anonym',c:'#90A4AE',i:'?'}:(P[post.who]||{n:post.authorName||'Mitglied',c:post.authorColor||'#2E7D32',i:(post.authorName||'?').split(' ').map(w=>w[0]).join('').slice(0,2)});
+  renderFeedChips();
+  const list=COMMUNITY.filter(post=>feedFilter==='Alle'||post.cat===feedFilter);
+  const feed=document.getElementById('feed');
+  if(list.length===0){feed.innerHTML='<div class="empty"><span class="ms">forum</span><div>Noch keine Beiträge in dieser Kategorie.</div></div>';return;}
+  feed.innerHTML=list.map(post=>{
+    const u=post.anon?{n:'Anonym',c:'#90A4AE',i:'?'}:post.authorName?{n:post.authorName,c:post.authorColor||'#2E7D32',i:post.authorName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}:(P[post.who]||{n:'Mitglied',c:'#2E7D32',i:'M'});
     const liked=likedPosts[post.id];
     return `<div class="post">
       <div class="post-top">
@@ -910,12 +973,61 @@ function renderProfile(){
       <div class="menu-item" onclick="toast('Deine Anfragen')"><span class="ms">group_add</span><div class="txt">Meine Anfragen</div><span class="ms">chevron_right</span></div>
     </div>
     <div style="margin-bottom:16px">
-      <div class="menu-item" onclick="openAdmin()"><span class="ms">shield_person</span><div class="txt">Admin-Panel</div><span class="ms">chevron_right</span></div>
+      ${isAdmin
+        ? `<div class="menu-item" onclick="openAdmin()"><span class="ms">shield_person</span><div class="txt">Admin-Panel</div><span class="status st-done" style="margin-left:auto">Admin</span></div>`
+        : `<div class="menu-item" onclick="openAdminApply()"><span class="ms">add_moderator</span><div class="txt">Teil des Admin-Teams werden</div><span class="ms">chevron_right</span></div>`}
       <div class="menu-item" onclick="toast('Einstellungen')"><span class="ms">settings</span><div class="txt">Einstellungen</div><span class="ms">chevron_right</span></div>
       <div class="menu-item" onclick="logout()"><span class="ms" style="color:#E53935!important">logout</span><div class="txt" style="color:#E53935">Abmelden</div></div>
     </div>`;
 }
-function logout(){document.getElementById('login').classList.remove('hide');loginHome();closeSheet();}
+function logout(){isAdmin=false;document.getElementById('admin-hdr-btn').style.display='none';document.getElementById('login').classList.remove('hide');loginHome();closeSheet();}
+
+/* ============ ADMIN-BEWERBUNG ============ */
+function openAdminApply(){
+  if(USER&&USER.guest){toast('Als Gast kannst du dich nicht bewerben – bitte Profil anlegen');return;}
+  showSheet(`<div class="sheet-handle"></div><div class="sheet-body">
+    <span class="sheet-cat" style="background:#5E35B122;color:#5E35B1"><span class="ms" style="font-size:15px">add_moderator</span>Admin-Team</span>
+    <div class="sheet-title" style="margin-bottom:6px">Werde Teil des Admin-Teams</div>
+    <p style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:16px">Als Admin hilfst du dabei, die Plattform sauber und sicher zu halten. Du kannst Pins und Beiträge moderieren, Bürgeranliegen bearbeiten und offizielle Infos veröffentlichen.</p>
+    <div class="card" style="padding:14px 16px;box-shadow:none;border:1px solid var(--line);margin-bottom:16px">
+      <div style="font-weight:700;font-size:14px;margin-bottom:10px">Deine Aufgaben als Admin</div>
+      <div style="display:flex;flex-direction:column;gap:9px;font-size:13.5px;color:var(--ink)">
+        <div style="display:flex;gap:10px;align-items:center"><span class="ms" style="color:var(--green)">wrong_location</span>Unangemessene Pins entfernen</div>
+        <div style="display:flex;gap:10px;align-items:center"><span class="ms" style="color:var(--green)">flag</span>Community-Beiträge moderieren</div>
+        <div style="display:flex;gap:10px;align-items:center"><span class="ms" style="color:var(--green)">fact_check</span>Bürgeranliegen bearbeiten</div>
+        <div style="display:flex;gap:10px;align-items:center"><span class="ms" style="color:var(--green)">campaign</span>Amtliche Infos veröffentlichen</div>
+      </div>
+    </div>
+    <div class="field"><label>Warum möchtest du Admin werden?</label><textarea id="apply-reason" placeholder="Erzähl uns kurz von deiner Motivation…"></textarea></div>
+    <div class="field" style="display:flex;align-items:center;gap:10px;background:var(--bg);padding:13px 15px;border-radius:14px"><input type="checkbox" id="apply-agree" style="width:auto;transform:scale(1.3)" checked><label style="margin:0;flex:1">Ich halte mich an die Community-Richtlinien</label></div>
+    <button class="btn" id="apply-btn" onclick="submitAdminApply()"><span class="ms">send</span>Bewerbung absenden</button>
+  </div>`);
+}
+function submitAdminApply(){
+  if(!document.getElementById('apply-agree').checked){toast('Bitte bestätige die Richtlinien');return;}
+  const btn=document.getElementById('apply-btn');btn.disabled=true;
+  btn.innerHTML='<div class="spinner" style="width:22px;height:22px;border-width:3px"></div>';
+  // Demo: automatische Annahme nach kurzer "Prüfung"
+  setTimeout(()=>{
+    isAdmin=true;
+    document.getElementById('admin-hdr-btn').style.display='grid';
+    document.getElementById('notif-dot').style.display='block';
+    closeSheet();
+    renderProfile();
+    showAdminWelcome();
+  },1800);
+}
+function showAdminWelcome(){
+  showSheet(`<div class="sheet-handle"></div><div class="sheet-body" style="text-align:center">
+    <div style="width:80px;height:80px;border-radius:50%;background:var(--green-soft);display:grid;place-items:center;margin:10px auto 16px"><span class="ms" style="font-size:44px;color:var(--green)">verified_user</span></div>
+    <div class="sheet-title" style="text-align:center">Willkommen im Admin-Team! 🎉</div>
+    <p style="color:var(--muted);font-size:14px;line-height:1.6;margin:8px 0 4px">Deine Bewerbung wurde angenommen. Du hast jetzt Zugriff auf alle Moderations-Werkzeuge.</p>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:6px">Du findest das Admin-Panel oben rechts über das <span class="ms" style="font-size:15px;vertical-align:-3px;color:#5E35B1">shield_person</span>-Symbol.</p>
+    <button class="btn" onclick="openAdmin()"><span class="ms">shield_person</span>Admin-Panel öffnen</button>
+    <button class="btn secondary" onclick="closeSheet()" style="margin-top:10px">Später</button>
+  </div>`);
+}
+
 
 /* ============ ADMIN ============ */
 function openAdmin(){
@@ -968,7 +1080,7 @@ function showSheet(html){document.getElementById('sheet').innerHTML=html;documen
 function closeSheet(){document.getElementById('overlay').classList.remove('show');}
 function toast(msg){const t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
 function shade(hex){const n=parseInt(hex.slice(1),16);let r=(n>>16)-30,g=((n>>8)&255)-30,b=(n&255)-30;r=Math.max(0,r);g=Math.max(0,g);b=Math.max(0,b);return'#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');}
-function renderAll(){renderFeed();renderRecs();renderIssues();renderOfficial();renderProfile();}
+function renderAll(){renderMapChips();renderFeed();renderRecs();renderIssues();renderOfficial();renderProfile();}
 </script>
 </body>
 </html>
