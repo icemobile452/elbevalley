@@ -8,10 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
 <style>
   :root{
-    --green:#2E7D32; --green2:#66BB6A; --green-soft:#E8F3E9;
-    --bg:#F7F8FA; --card:#FFFFFF; --ink:#1A2A1B; --muted:#6B7A6C;
-    --line:#E7ECE8; --shadow:0 2px 12px rgba(30,60,32,.06);
-    --shadow-lg:0 8px 30px rgba(30,60,32,.12);
+    --green:#0071E3; --green2:#47A9FF; --green-soft:#E8F3FF;
+    --bg:#F7F8FA; --card:#FFFFFF; --ink:#1A1A2E; --muted:#6B7280;
+    --line:#E2E8F0; --shadow:0 2px 12px rgba(0,113,227,.06);
+    --shadow-lg:0 8px 30px rgba(0,113,227,.12);
     --radius:20px; --radius-sm:14px;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -47,12 +47,12 @@
   .filterbtn{background:var(--green);color:#fff;border:none;border-radius:14px;padding:0 16px;display:flex;align-items:center;gap:6px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;box-shadow:var(--shadow)}
   .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
-  .chips-bar{position:sticky;top:0;z-index:10;display:flex;gap:8px;padding:10px 14px;overflow-x:auto;scrollbar-width:none;background:var(--bg);border-bottom:1px solid var(--line)}
+  .chips-bar{position:sticky;top:0;z-index:15;display:flex;gap:8px;padding:10px 14px;overflow-x:auto;scrollbar-width:none;background:var(--bg);border-bottom:1px solid var(--line)}
   .chips-bar::-webkit-scrollbar{display:none}
   .chip{white-space:nowrap;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;gap:5px;transition:.2s}
   .chip.on{background:var(--green);color:#fff;border-color:var(--green)}
   .chip .ms{font-size:16px}
-  .fab{position:absolute;right:16px;bottom:24px;z-index:10;width:60px;height:60px;border-radius:50%;background:var(--green);color:#fff;border:none;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 20px rgba(46,125,50,.4);transition:.2s}
+  .fab{position:absolute;right:16px;bottom:24px;z-index:10;width:60px;height:60px;border-radius:50%;background:var(--green);color:#fff;border:none;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 20px rgba(0,113,227,.4);transition:.2s}
   .fab:active{transform:scale(.9)}
   .fab .ms{font-size:30px}
   .pin-ico{width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:grid;place-items:center;box-shadow:0 3px 8px rgba(0,0,0,.3);border:2.5px solid #fff}
@@ -102,7 +102,7 @@
   .vote button.down.on{background:#FFEBEE;border-color:#EF9A9A;color:#C62828}
   .official{background:linear-gradient(135deg,#fff,#F5FAF5);border-left:4px solid var(--green);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;margin:0 18px 12px}
   .official-tag{font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:5px;margin-bottom:6px}
-  .prof-head{background:linear-gradient(160deg,var(--green),var(--green2));padding:34px 18px 28px;color:#fff;position:relative}
+  .prof-head{background:linear-gradient(160deg,#0071E3,#47A9FF);padding:34px 18px 28px;color:#fff;position:relative}
   .prof-avatar{width:84px;height:84px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:34px;font-weight:800;color:var(--green);margin-bottom:12px;box-shadow:0 6px 18px rgba(0,0,0,.2)}
   .prof-name{font-size:24px;font-weight:800;display:flex;align-items:center;gap:8px}
   .verified{font-size:11px;background:rgba(255,255,255,.25);padding:4px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;font-weight:600}
@@ -123,11 +123,11 @@
   .overlay{position:fixed;inset:0;background:rgba(20,30,20,.5);z-index:100;display:none;align-items:flex-end;justify-content:center}
   .overlay.show{display:flex;animation:fade .25s}
   #app .overlay{position:absolute}
-  .sheet{background:var(--card);width:100%;max-width:440px;border-radius:26px 26px 0 0;max-height:92%;overflow-y:auto;animation:slideUp .35s cubic-bezier(.16,1,.3,1);padding-bottom:24px}
+  .sheet{background:var(--card);width:100%;max-width:440px;border-radius:26px 26px 0 0;max-height:92%;overflow-y:auto;animation:slideUp .35s cubic-bezier(.16,1,.3,1);padding-bottom:24px;position:relative}
   .sheet-handle{width:40px;height:5px;background:var(--line);border-radius:3px;margin:12px auto 4px}
-  .sheet-hero{height:190px;background:linear-gradient(135deg,var(--green2),var(--green));position:relative;display:grid;place-items:center;color:#fff}
+  .sheet-hero{height:190px;background:linear-gradient(135deg,var(--green2),var(--green));position:relative;display:grid;place-items:center;color:#fff;overflow:visible}
   .sheet-hero .ms{font-size:60px;opacity:.9}
-  .sheet-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border:none;display:grid;place-items:center;cursor:pointer;z-index:5}
+  .sheet-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border:none;display:grid;place-items:center;cursor:pointer;z-index:10}
   .sheet-body{padding:18px}
   .sheet-cat{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;margin-bottom:10px}
   .sheet-title{font-size:23px;font-weight:800;line-height:1.2;margin-bottom:6px}
@@ -171,7 +171,7 @@
   .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:13px 22px;border-radius:30px;font-size:14px;font-weight:600;z-index:200;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:.3s;max-width:90%}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   #app .toast{position:absolute}
-  .login{position:absolute;inset:0;z-index:50;background:linear-gradient(165deg,var(--green) 0%,#1B5E20 60%,#0D3B10 100%);display:flex;flex-direction:column;justify-content:center;padding:40px 30px;color:#fff;overflow-y:auto}
+  .login{position:absolute;inset:0;z-index:50;background:linear-gradient(165deg,#0071E3 0%,#004EAA 60%,#001F6E 100%);display:flex;flex-direction:column;justify-content:center;padding:40px 30px;color:#fff;overflow-y:auto}
   .login.hide{display:none}
   .logo-badge{width:76px;height:76px;border-radius:22px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);display:grid;place-items:center;margin-bottom:22px;border:1px solid rgba(255,255,255,.2)}
   .logo-badge .ms{font-size:42px;color:#fff}
@@ -180,7 +180,7 @@
   .login-btns{display:flex;flex-direction:column;gap:12px}
   .lbtn{padding:16px;border-radius:16px;border:none;font-family:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
   .lbtn:active{transform:scale(.98)}
-  .lbtn.primary{background:#fff;color:var(--green)}
+  .lbtn.primary{background:#fff;color:#0071E3}
   .lbtn.ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25)}
   .lbtn.text{background:none;color:#fff;opacity:.85;font-weight:600}
   .login-field{margin-bottom:14px}
@@ -192,16 +192,36 @@
   .acct-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
   .acct-opt{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);border-radius:14px;padding:13px 8px;text-align:center;cursor:pointer;font-size:13px;font-weight:600;color:#fff;transition:.18s;display:flex;flex-direction:column;align-items:center;gap:5px}
   .acct-opt .ms{font-size:24px}
-  .acct-opt.on{background:#fff;color:var(--green);border-color:#fff}
+  .acct-opt.on{background:#fff;color:#0071E3;border-color:#fff}
   .verify-box{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center}
   .verify-cam{width:100%;height:160px;background:rgba(0,0,0,.25);border-radius:12px;display:grid;place-items:center;margin-bottom:12px;position:relative;overflow:hidden}
   .verify-scan{position:absolute;left:0;right:0;height:3px;background:var(--green2);box-shadow:0 0 12px var(--green2);animation:scan 2s ease-in-out infinite}
   @keyframes scan{0%,100%{top:15%}50%{top:85%}}
 
+
+  /* ── INTERESSEN AUSWAHL ── */
+  .int-sel{
+    background:rgba(255,255,255,0.18);
+    border:1.5px solid rgba(255,255,255,0.35);
+    border-radius:20px;
+    padding:8px 13px;
+    font-size:13px;
+    font-weight:600;
+    color:#fff;
+    cursor:pointer;
+    transition:.18s;
+    user-select:none;
+  }
+  .int-sel.on{
+    background:rgba(255,255,255,0.90);
+    color:#0071E3;
+    border-color:rgba(255,255,255,0.95);
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+  }
   /* ── ANIMATED LOGIN ── */
   .login{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;overflow:hidden}
   .login.hide{display:none}
-  .login-canvas{position:absolute;inset:0;background:linear-gradient(180deg,#071A52 0%,#0D47A1 45%,#1976D2 70%,#4CAF50 70%,#2E7D32 100%)}
+  .login-canvas{position:absolute;inset:0;background:linear-gradient(180deg,#001233 0%,#0071E3 45%,#47A9FF 70%,#4CAF50 70%,#2E7D32 100%)}
   .login-svg{position:absolute;inset:0;width:100%;height:100%}
   .login-overlay{position:absolute;inset:0;background:linear-gradient(to bottom, rgba(7,26,82,.3) 0%, rgba(7,26,82,.1) 40%, rgba(7,26,82,.6) 100%)}
   .login-content{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;height:100%;padding:40px 30px;color:#fff;overflow-y:auto}
@@ -212,7 +232,7 @@
   .login-btns{display:flex;flex-direction:column;gap:12px}
   .lbtn{padding:16px;border-radius:16px;border:none;font-family:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
   .lbtn:active{transform:scale(.98)}
-  .lbtn.primary{background:#fff;color:var(--green)}
+  .lbtn.primary{background:#fff;color:#0071E3}
   .lbtn.ghost{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px)}
   .lbtn.text{background:none;color:#fff;opacity:.85;font-weight:600}
   .login-field{margin-bottom:14px}
@@ -224,7 +244,7 @@
   .acct-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
   .acct-opt{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:14px;padding:13px 8px;text-align:center;cursor:pointer;font-size:13px;font-weight:600;color:#fff;transition:.18s;display:flex;flex-direction:column;align-items:center;gap:5px}
   .acct-opt .ms{font-size:24px}
-  .acct-opt.on{background:#fff;color:var(--green);border-color:#fff}
+  .acct-opt.on{background:#fff;color:#0071E3;border-color:#fff}
   .verify-box{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center}
   .verify-cam{width:100%;height:160px;background:rgba(0,0,0,.25);border-radius:12px;display:grid;place-items:center;margin-bottom:12px;position:relative;overflow:hidden}
   .verify-scan{position:absolute;left:0;right:0;height:3px;background:#42A5F5;box-shadow:0 0 12px #42A5F5;animation:scan 2s ease-in-out infinite}
@@ -234,6 +254,156 @@
   @keyframes cloudmove{0%{transform:translateX(-20px)}100%{transform:translateX(20px)}}
   @keyframes birdfly{0%{transform:translateX(0) translateY(0)}25%{transform:translateX(40px) translateY(-10px)}50%{transform:translateX(80px) translateY(0)}75%{transform:translateX(120px) translateY(-8px)}100%{transform:translateX(160px) translateY(0)}}
   @keyframes waterflow{0%{transform:translateX(0)}100%{transform:translateX(40px)}}
+
+  /* ── APPLE LIQUID GLASS ── */
+  :root {
+    --glass: rgba(255,255,255,0.22);
+    --glass-border: rgba(255,255,255,0.62);
+    --glass-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.7) inset;
+    --glass-blur: saturate(180%) blur(20px);
+  }
+  html,body { background: linear-gradient(135deg,#cce4ff 0%,#dbeeff 40%,#f0f7ff 70%,#dde8ff 100%) fixed !important; }
+  #app { background: rgba(235,244,255,0.50); backdrop-filter: saturate(200%) blur(4px); }
+
+  /* Frosted glass header */
+  .hdr {
+    background: rgba(255,255,255,0.60) !important;
+    backdrop-filter: saturate(200%) blur(32px) !important;
+    -webkit-backdrop-filter: saturate(200%) blur(32px) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.72) !important;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset, 0 2px 20px rgba(0,113,227,0.07) !important;
+  }
+  /* Frosted nav */
+  .nav {
+    background: rgba(255,255,255,0.68) !important;
+    backdrop-filter: saturate(200%) blur(36px) !important;
+    -webkit-backdrop-filter: saturate(200%) blur(36px) !important;
+    border-top: 1px solid rgba(255,255,255,0.78) !important;
+    box-shadow: 0 -1px 0 rgba(255,255,255,0.95) inset, 0 -4px 24px rgba(0,113,227,0.05) !important;
+  }
+  /* Icon buttons – pill glass */
+  .iconbtn {
+    background: rgba(255,255,255,0.58) !important;
+    backdrop-filter: saturate(200%) blur(16px) !important;
+    -webkit-backdrop-filter: saturate(200%) blur(16px) !important;
+    border: 1px solid rgba(255,255,255,0.80) !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.09), 0 1px 0 rgba(255,255,255,0.95) inset !important;
+  }
+  /* Cards / posts / issues / stats */
+  .card, .post, .issue, .official, .stat {
+    background: rgba(255,255,255,0.55) !important;
+    backdrop-filter: saturate(180%) blur(18px) !important;
+    -webkit-backdrop-filter: saturate(180%) blur(18px) !important;
+    border: 1px solid rgba(255,255,255,0.70) !important;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.85) inset !important;
+  }
+  /* Chips bar */
+  .chips-bar {
+    background: rgba(235,244,255,0.88) !important;
+    backdrop-filter: saturate(200%) blur(24px) !important;
+    -webkit-backdrop-filter: saturate(200%) blur(24px) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.65) !important;
+    top: 0 !important;
+    z-index: 15 !important;
+  }
+  /* Bottom sheet – thick frosted panel */
+  .sheet {
+    background: rgba(242,248,255,0.88) !important;
+    backdrop-filter: saturate(200%) blur(40px) !important;
+    -webkit-backdrop-filter: saturate(200%) blur(40px) !important;
+    border-top: 1px solid rgba(255,255,255,0.88) !important;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.95) inset !important;
+    border-radius: 28px 28px 0 0 !important;
+  }
+  /* Secondary buttons */
+  .btn.secondary {
+    background: rgba(255,255,255,0.52) !important;
+    backdrop-filter: saturate(160%) blur(14px) !important;
+    border: 1px solid rgba(255,255,255,0.72) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 0 rgba(255,255,255,0.9) inset !important;
+  }
+  /* Segment control */
+  .seg {
+    background: rgba(0,113,227,0.08) !important;
+    backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(255,255,255,0.60) !important;
+  }
+  .seg button.on {
+    background: rgba(255,255,255,0.88) !important;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.10) !important;
+  }
+  /* Map controls */
+  .map-controls {
+    background: rgba(235,244,255,0.80) !important;
+    backdrop-filter: saturate(180%) blur(20px) !important;
+    -webkit-backdrop-filter: saturate(180%) blur(20px) !important;
+  }
+  /* Map search input */
+  .map-search input {
+    background: rgba(255,255,255,0.62) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.75) !important;
+  }
+  /* Chips */
+  .chip {
+    background: rgba(255,255,255,0.55) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.65) !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+  }
+  .chip.on {
+    background: var(--green) !important;
+    border-color: var(--green) !important;
+    box-shadow: 0 2px 12px rgba(0,113,227,0.30) !important;
+  }
+  /* Comment input */
+  .comment-input-wrap {
+    background: rgba(242,248,255,0.90) !important;
+    backdrop-filter: saturate(200%) blur(24px) !important;
+    border-top: 1px solid rgba(255,255,255,0.75) !important;
+  }
+  .comment-input-wrap input {
+    background: rgba(255,255,255,0.58) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255,255,255,0.70) !important;
+  }
+  /* Login fields */
+  .login-field input {
+    background: rgba(255,255,255,0.20) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255,255,255,0.40) !important;
+  }
+
+  /* REC CARD REDESIGN – Liquid Glass */
+  .rec-card-glass {
+    margin: 0 16px 18px;
+    border-radius: 24px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border: 1px solid rgba(255,255,255,0.70);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.85) inset;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .rec-card-glass:active { transform: scale(.98); }
+  .rec-hero { width:100%; height:180px; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .rec-hero-icon { font-size: 68px; opacity:.9; filter: drop-shadow(0 4px 12px rgba(0,0,0,.2)); }
+  .rec-hero-overlay { position:absolute;inset:0; background:linear-gradient(to bottom,rgba(0,0,0,0) 40%,rgba(0,0,0,0.45) 100%); }
+  .rec-hero-badge { position:absolute;top:12px;left:12px; background:rgba(255,255,255,0.82); backdrop-filter:blur(12px); padding:5px 12px; border-radius:20px; font-size:11.5px; font-weight:700; border:1px solid rgba(255,255,255,0.9); }
+  .rec-hero-admin { position:absolute;top:12px;right:12px; display:flex; gap:6px; }
+  .rec-body { padding: 14px 16px 4px; }
+  .rec-title-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+  .rec-title-text { font-weight:800; font-size:16px; flex:1; }
+  .rec-stars { display:flex; align-items:center; gap:2px; }
+  .rec-star { font-size:22px; cursor:pointer; transition:transform .15s, color .15s; color:#ccc; user-select:none; }
+  .rec-star.on { color:#F59E0B; }
+  .rec-star:active { transform:scale(1.3); }
+  .rec-desc-text { font-size:13.5px; color:var(--muted); line-height:1.55; margin-bottom:10px; }
+  .rec-meta-row { display:flex; gap:14px; font-size:12.5px; color:var(--muted); font-weight:500; margin-bottom:12px; }
+  .rec-meta-row span { display:flex; align-items:center; gap:4px; }
+  .rec-actions { display:flex; gap:8px; padding-bottom:14px; }
+  .rec-comment-count { font-size:12px; color:var(--muted); font-weight:600; padding:4px 0 10px; display:flex; align-items:center; gap:4px; cursor:pointer; }
   .empty{text-align:center;padding:50px 30px;color:var(--muted)}
   .empty .ms{font-size:52px;opacity:.4;margin-bottom:12px}
   .spinner{width:44px;height:44px;border:4px solid var(--green-soft);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
@@ -411,7 +581,28 @@
         <div class="login-field"><label id="reg-name-label">Dein Name *</label><input id="reg-name" placeholder="z.B. Anna Müller"></div>
         <div class="login-field"><label>E-Mail *</label><input id="reg-email" type="email" placeholder="z.B. anna@beispiel.de"></div>
         <div class="login-field"><label>Wohnort *</label><input id="reg-loc" placeholder="z.B. Bleckede"></div>
-        <button class="lbtn primary" onclick="startVerify()"><span class="ms">arrow_forward</span>Weiter zur Verifizierung</button>
+        <div class="login-field" style="margin-top:4px">
+          <label style="margin-bottom:10px;display:block">Interessen <span style="opacity:.6;font-weight:400">(optional)</span></label>
+          <div id="reg-interests" style="display:flex;flex-wrap:wrap;gap:8px">
+            <div class="int-sel" data-v="Wandern" onclick="toggleInterest(this)">🥾 Wandern</div>
+            <div class="int-sel" data-v="Radfahren" onclick="toggleInterest(this)">🚴 Radfahren</div>
+            <div class="int-sel" data-v="Natur" onclick="toggleInterest(this)">🌿 Natur</div>
+            <div class="int-sel" data-v="Fotografie" onclick="toggleInterest(this)">📷 Fotografie</div>
+            <div class="int-sel" data-v="Kochen" onclick="toggleInterest(this)">🍳 Kochen</div>
+            <div class="int-sel" data-v="Musik" onclick="toggleInterest(this)">🎵 Musik</div>
+            <div class="int-sel" data-v="Sport" onclick="toggleInterest(this)">⚽ Sport</div>
+            <div class="int-sel" data-v="Gartenarbeit" onclick="toggleInterest(this)">🌱 Gartenarbeit</div>
+            <div class="int-sel" data-v="Lesen" onclick="toggleInterest(this)">📚 Lesen</div>
+            <div class="int-sel" data-v="Heimwerken" onclick="toggleInterest(this)">🔨 Heimwerken</div>
+            <div class="int-sel" data-v="Schwimmen" onclick="toggleInterest(this)">🏊 Schwimmen</div>
+            <div class="int-sel" data-v="Ehrenamt" onclick="toggleInterest(this)">🤝 Ehrenamt</div>
+            <div class="int-sel" data-v="Angeln" onclick="toggleInterest(this)">🎣 Angeln</div>
+            <div class="int-sel" data-v="Camping" onclick="toggleInterest(this)">⛺ Camping</div>
+            <div class="int-sel" data-v="Kunst" onclick="toggleInterest(this)">🎨 Kunst</div>
+            <div class="int-sel" data-v="Hunde" onclick="toggleInterest(this)">🐕 Hunde</div>
+          </div>
+        </div>
+        <button class="lbtn primary" onclick="startVerify()" style="margin-top:20px"><span class="ms">arrow_forward</span>Weiter zur Verifizierung</button>
       </div>
     </div>
 
@@ -470,7 +661,7 @@
       <button class="iconbtn" id="admin-hdr-btn" onclick="openAdmin()" title="Admin" style="display:none"><span class="ms">shield_person</span></button>
     </div>
     <div id="hdr-actions-guest" style="display:none">
-      <button onclick="logout()" style="background:var(--green);color:#fff;border:none;border-radius:14px;padding:10px 16px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(46,125,50,.3)"><span class="ms" style="font-size:18px">person_add</span>Jetzt registrieren</button>
+      <button onclick="logout()" style="background:var(--green);color:#fff;border:none;border-radius:14px;padding:10px 16px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(0,113,227,.3)"><span class="ms" style="font-size:18px">person_add</span>Jetzt registrieren</button>
     </div>
   </div>
 
@@ -496,7 +687,7 @@
 
   <div class="screen" id="s-rec">
     <div class="chips-bar" id="rec-chips"></div>
-    <div id="rec-list"></div>
+    <div id="rec-list" style="padding-top:8px"></div>
   </div>
 
   <div class="screen" id="s-portal">
@@ -516,7 +707,7 @@
   <div class="nav" id="nav">
     <button class="on" onclick="go('map',this)"><span class="ms">map</span><span class="lbl">Karte</span></button>
     <button onclick="go('community',this)"><span class="ms">forum</span><span class="lbl">Community</span></button>
-    <button onclick="go('rec',this)"><span class="ms">recommend</span><span class="lbl">Tipps</span></button>
+    <button onclick="go('rec',this)"><span class="ms">star</span><span class="lbl">Top Tipps</span></button>
     <button onclick="go('portal',this)"><span class="ms">account_balance</span><span class="lbl">Portal</span></button>
     <button onclick="go('profile',this)"><span class="ms">person</span><span class="lbl">Profil</span></button>
   </div>
@@ -582,7 +773,7 @@
 <script>
 /* ============ STATIC DATA (Demo-Grundstock) ============ */
 const CATS = {
-  aktiv:{label:'Gemeinsame Aktivität',ico:'groups',color:'#2E7D32'},
+  aktiv:{label:'Gemeinsame Aktivität',ico:'groups',color:'#0071E3'},
   wandern:{label:'Wandern',ico:'hiking',color:'#558B2F'},
   fahrrad:{label:'Fahrrad',ico:'directions_bike',color:'#00897B'},
   grillen:{label:'Grillen',ico:'outdoor_grill',color:'#E64A19'},
@@ -597,7 +788,7 @@ const CATS = {
   gastro:{label:'Gastronomie',ico:'restaurant',color:'#EF6C00'},
   sehens:{label:'Sehenswürdigkeit',ico:'photo_camera',color:'#0097A7'},
   lost:{label:'Lost Place',ico:'castle',color:'#455A64'},
-  natur:{label:'Natur',ico:'park',color:'#2E7D32'},
+  natur:{label:'Natur',ico:'park',color:'#0071E3'},
   unternehmen:{label:'Unternehmen',ico:'business_center',color:'#3949AB'},
 };
 const P = {
@@ -663,13 +854,19 @@ const SEED_COMMUNITY = [
   {id:'sc14',who:'greta',anon:false,cat:'Freizeit',time:'vor 6 Tagen',body:'Die Störche sind zurück am Nest bei der Elbtalaue! 🐦 Wer Lust hat, sie zu beobachten – ich organisiere Sonntag früh eine kleine Tour zum Beobachtungsturm.',img:true,likes:58,comments:12},
 ];
 const RECS = [
-  {cat:'Sehenswürdigkeit',t:'Altstadt Hitzacker',ico:'photo_camera',rating:4.8,desc:'Malerische Fachwerk-Inselstadt an der Jeetzel. Perfekt für einen Bummel und Kaffee am Wasser.',loc:'Hitzacker',open:'Immer geöffnet',color:'#0097A7'},
-  {cat:'Natur',t:'Elbberge Bleckede',ico:'park',rating:4.9,desc:'Aussichtspunkt mit Panoramablick über das Elbtal. Besonders schön zum Sonnenuntergang.',loc:'Bleckede',open:'Ganzjährig',color:'#2E7D32'},
-  {cat:'Gastronomie',t:'Gasthof zur Elbe',ico:'restaurant',rating:4.6,desc:'Traditionsküche mit Biergarten und Elbblick. Das hauseigene Bier ist ein Muss.',loc:'Bleckede',open:'11:00–22:00',color:'#EF6C00'},
-  {cat:'Ausflugsziel',t:'Biosphaerium Elbtalaue',ico:'pets',rating:4.7,desc:'Erlebniszentrum mit Störchen, Fischottern und Ausstellung zur Flusslandschaft. Ideal für Familien.',loc:'Bleckede',open:'10:00–18:00',color:'#00897B'},
-  {cat:'Café',t:'Café am Marktplatz',ico:'local_cafe',rating:4.5,desc:'Hausgemachte Torten und fairer Kaffee im Herzen der Altstadt. Sonnige Terrasse.',loc:'Hitzacker',open:'9:00–18:00',color:'#8D6E63'},
-  {cat:'Lost Place',t:'Alte Ziegelei',ico:'castle',rating:4.4,desc:'Verlassene Backsteinruine, von der Natur zurückerobert. Ein Paradies für Fotografen.',loc:'bei Bleckede',open:'Auf eigene Gefahr',color:'#455A64'},
+  {id:'r1',cat:'Sehenswürdigkeit',t:'Altstadt Hitzacker',ico:'photo_camera',rating:4.8,userRating:0,desc:'Malerische Fachwerk-Inselstadt an der Jeetzel. Perfekt für einen Bummel und Kaffee am Wasser.',loc:'Hitzacker',open:'Immer geöffnet',color:'#0097A7'},
+  {id:'r2',cat:'Natur',t:'Elbberge Bleckede',ico:'park',rating:4.9,userRating:0,desc:'Aussichtspunkt mit Panoramablick über das Elbtal. Besonders schön zum Sonnenuntergang.',loc:'Bleckede',open:'Ganzjährig',color:'#2E7D32'},
+  {id:'r3',cat:'Gastronomie',t:'Gasthof zur Elbe',ico:'restaurant',rating:4.6,userRating:0,desc:'Traditionsküche mit Biergarten und Elbblick. Das hauseigene Bier ist ein Muss.',loc:'Bleckede',open:'11:00–22:00',color:'#EF6C00'},
+  {id:'r4',cat:'Ausflugsziel',t:'Biosphaerium Elbtalaue',ico:'pets',rating:4.7,userRating:0,desc:'Erlebniszentrum mit Störchen, Fischottern und Ausstellung zur Flusslandschaft. Ideal für Familien.',loc:'Bleckede',open:'10:00–18:00',color:'#00897B'},
+  {id:'r5',cat:'Café',t:'Café am Marktplatz',ico:'local_cafe',rating:4.5,userRating:0,desc:'Hausgemachte Torten und fairer Kaffee im Herzen der Altstadt. Sonnige Terrasse.',loc:'Hitzacker',open:'9:00–18:00',color:'#8D6E63'},
+  {id:'r6',cat:'Lost Place',t:'Alte Ziegelei',ico:'castle',rating:4.4,userRating:0,desc:'Verlassene Backsteinruine, von der Natur zurückerobert. Ein Paradies für Fotografen.',loc:'bei Bleckede',open:'Auf eigene Gefahr',color:'#455A64'},
 ];
+const REC_COMMENTS = {
+  'r1':[{localId:'rc1a',who:'Anna Müller',color:'#2E7D32',initials:'AM',text:'Wunderschöner Ort! Die Altstadt ist wirklich einmalig 😍',time:'vor 2 Std'}],
+  'r2':[{localId:'rc2a',who:'Tom Herzog',color:'#1976D2',initials:'TH',text:'Zum Sonnenuntergang absolut magisch. Unbedingt hingehen!',time:'gestern'}],
+  'r3':[{localId:'rc3a',who:'Petra Wolf',color:'#C2185B',initials:'PW',text:'Das Rinderfilet ist der Hammer. Reservierung empfehlenswert.',time:'vor 3 Tagen'}],
+};
+const DELETED_REC_COMMENT_IDS = new Set();
 let ISSUES = [
   {id:'si1',t:'Schlagloch auf der Hauptstraße',cat:'Straße',status:'prog',desc:'Tiefes Schlagloch Höhe Hausnummer 45, schon mehrere platte Reifen. Bitte dringend ausbessern!',loc:'Hauptstraße, Bleckede',up:34,down:1,myvote:null,who:'tom'},
   {id:'si2',t:'Defekte Straßenlaterne am Deichweg',cat:'Beleuchtung',status:'neu',desc:'Die Laterne am Deichaufgang ist seit zwei Wochen aus. Abends stockdunkel und gefährlich für Radfahrer.',loc:'Deichweg',up:19,down:0,myvote:null,who:'maria'},
@@ -727,6 +924,13 @@ function selAccount(type,el){
   document.getElementById('reg-name-label').textContent=t.nameLabel;
   document.getElementById('reg-name').placeholder=t.namePh;
 }
+
+function toggleInterest(el){
+  el.classList.toggle('on');
+}
+function getSelectedInterests(){
+  return Array.from(document.querySelectorAll('#reg-interests .int-sel.on')).map(e=>e.dataset.v);
+}
 function startVerify(){
   const name=document.getElementById('reg-name').value.trim();
   const email=document.getElementById('reg-email').value.trim();
@@ -735,7 +939,7 @@ function startVerify(){
   if(!email){toast('Bitte gib eine E-Mail ein');return;}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Bitte gib eine gültige E-Mail ein');return;}
   if(!loc){toast('Bitte gib deinen Wohnort ein');return;}
-  pendingReg={name,email,loc,acct:selAcct};
+  pendingReg={name,email,loc,acct:selAcct,interests:getSelectedInterests()};
   ['main','register','verify','signin'].forEach(v=>document.getElementById('login-'+v).style.display='none');
   document.getElementById('login-verify').style.display='block';
 }
@@ -743,7 +947,7 @@ function finishVerify(verified){
   const colors=['#2E7D32','#1976D2','#C2185B','#EF6C00','#5E35B1','#00897B','#D81B60','#6D4C41','#3949AB','#8E24AA'];
   const name=pendingReg.name;
   const initials=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-  USER={name,email:pendingReg.email,loc:pendingReg.loc,acct:pendingReg.acct,initials,color:colors[Math.floor(Math.random()*colors.length)],verified};
+  USER={name,email:pendingReg.email,loc:pendingReg.loc,acct:pendingReg.acct,initials,color:colors[Math.floor(Math.random()*colors.length)],verified,interests:pendingReg.interests||[]};
   CURRENT_USER=name;
   // Persona-Eintrag anlegen, damit eigene Beiträge korrekt angezeigt werden
   P['me']={n:name,c:USER.color,i:initials};
@@ -751,7 +955,7 @@ function finishVerify(verified){
 }
 /* ============ DEMO ACCOUNTS ============ */
 const DEMO_USERS = [
-  {name:'Anna Müller',      loc:'Bleckede',      acct:'privat',      color:'#2E7D32', verified:true,  emoji:'👩‍🌾', role:'Bürgerin'},
+  {name:'Anna Müller',      loc:'Bleckede',      acct:'privat',      color:'#0071E3', verified:true,  emoji:'👩‍🌾', role:'Bürgerin'},
   {name:'Tom Herzog',       loc:'Hitzacker',     acct:'privat',      color:'#1976D2', verified:true,  emoji:'🚴',  role:'Radfahrer'},
   {name:'Gasthof zur Elbe', loc:'Bleckede',      acct:'unternehmen', color:'#EF6C00', verified:true,  emoji:'🍺',  role:'Unternehmen'},
   {name:'SV Elbaue e.V.',   loc:'Bleckede',      acct:'verein',      color:'#00897B', verified:true,  emoji:'⚽',  role:'Verein'},
@@ -780,7 +984,13 @@ function loginAsDemo(u){
   USER={name:u.name,loc:u.loc,acct:u.acct,initials,color:u.color,verified:u.verified,email:u.name.toLowerCase().replace(/\s/g,'.')+'@workshop.demo'};
   CURRENT_USER=u.name;
   P['me']={n:u.name,c:u.color,i:initials};
-  enterApp('Willkommen, '+u.name.split(' ')[0]+'! 👋');
+  // Gemeinde Bleckede & Institutionen bekommen automatisch Admin-Rechte (Demo)
+  if(u.acct==='institution'){
+    isAdmin=true;
+    document.getElementById('admin-hdr-btn').style.display='grid';
+    document.getElementById('notif-dot').style.display='block';
+  }
+  enterApp('Willkommen, '+u.name.split(' ')[0]+'! 👋'+(u.acct==='institution'?' (Admin)':''));
 }
 
 function doSignin(){
@@ -888,7 +1098,7 @@ function initFirebase(){
 window.addEventListener('fb-init-done',initFirebase);
 
 /* ============ NAV ============ */
-const TITLES={map:['Karte','Elbe Valley · Region entdecken'],community:['Community','Regionaler Austausch'],rec:['Tipps','Empfehlungen der Region'],portal:['Bürgerportal','Bürger & Landkreis'],profile:['Profil','Dein ElbeValley']};
+const TITLES={map:['Karte','Elbe Valley · Region entdecken'],community:['Community','Regionaler Austausch'],rec:['Ein Besuch wert ⭐','Top Empfehlungen der Region'],portal:['Bürgerportal','Bürger & Landkreis'],profile:['Profil','Dein ElbeValley']};
 function go(screen,btn){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('s-'+screen).classList.add('active');
@@ -1092,7 +1302,7 @@ function renderFeed(){
       ${post.img?`<div class="post-img" style="display:grid;place-items:center"><span class="ms" style="font-size:44px;color:#fff;opacity:.7">image</span></div>`:''}
       <div class="post-actions">
         <button class="${liked?'liked':''}" onclick="likePost('${post.id}')"><span class="ms">favorite</span><span>${(post.likes||0)+(liked?1:0)}</span></button>
-        <button onclick="openComments('${post.id}')"><span class="ms">chat_bubble</span><span id="cc-${post.id}">${(post.comments||0)}</span></button>
+        <button onclick="openComments('${post.id}')"><span class="ms">chat_bubble</span><span id="cc-${post.id}">${(POST_COMMENTS[post.id]||[]).length||(post.comments||0)}</span></button>
         <button onclick="toast('Geteilt ✓')"><span class="ms">share</span>Teilen</button>
         ${(USER&&(isAdmin||(post.authorName===USER.name&&!post.anon)))?`<button onclick="deletePost('${post.id}')" style="margin-left:auto;color:#E53935"><span class="ms">delete</span></button>`:''}
       </div>
@@ -1161,20 +1371,155 @@ async function savePost(){
 
 /* ============ RECOMMENDATIONS ============ */
 let recFilter='Alle';
+function starsHtml(rec){
+  const r=rec.userRating||0;
+  return [1,2,3,4,5].map(i=>`<span class="ms rec-star ${i<=r?'on':''}" onclick="rateRec('${rec.id}',${i});event.stopPropagation()">star</span>`).join('');
+}
+function rateRec(id,stars){
+  const r=RECS.find(x=>x.id===id);
+  if(!r)return;
+  if(USER&&USER.guest){toast('Bitte anmelden zum Bewerten');return;}
+  r.userRating=stars;
+  // Durchschnitt leicht anpassen
+  r.rating=Math.round(((r.rating*10+stars)/11)*10)/10;
+  renderRecs();
+  toast(`Bewertet mit ${stars} ⭐`);
+}
+function openRecComments(id){
+  const r=RECS.find(x=>x.id===id);
+  if(!r)return;
+  if(!REC_COMMENTS[id])REC_COMMENTS[id]=[];
+  renderRecCommentsSheet(id,r);
+}
+function renderRecCommentsSheet(id,rec){
+  const comments=REC_COMMENTS[id]||[];
+  const canDel=(c)=>USER&&(isAdmin||c.who===USER.name);
+  const cHtml=comments.length===0
+    ?'<div style="text-align:center;padding:30px;color:var(--muted)"><span class="ms" style="font-size:36px;display:block;opacity:.4">chat_bubble</span>Noch keine Kommentare.</div>'
+    :comments.map(c=>`<div class="comment" id="rcmt-${c.localId}">
+        <div class="comment-avatar" style="background:${c.color}">${c.initials}</div>
+        <div class="comment-body">
+          <div class="comment-name">${c.who}</div>
+          <div class="comment-text">${c.text}</div>
+          <div class="comment-time">${c.time}</div>
+        </div>
+        ${canDel(c)?`<button onclick="deleteRecComment('${id}','${c.localId}')" style="background:none;border:none;color:#E53935;cursor:pointer;padding:4px"><span class="ms" style="font-size:20px">delete</span></button>`:''}
+      </div>`).join('');
+  showSheet(`
+    <div class="sheet-handle"></div>
+    <div style="padding:14px 18px 10px;border-bottom:1px solid var(--line)">
+      <div style="font-weight:800;font-size:18px">Kommentare</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">${rec.t}</div>
+    </div>
+    <div style="padding:0 18px 100px">${cHtml}</div>
+    <div class="comment-input-wrap">
+      <div class="comment-avatar" style="background:${USER?USER.color:'#90A4AE'}">${USER?USER.initials:'G'}</div>
+      <input id="rcmt-inp-${id}" placeholder="Kommentar schreiben…" onkeydown="if(event.key==='Enter')submitRecComment('${id}')">
+      <button class="comment-send" onclick="submitRecComment('${id}')"><span class="ms">send</span></button>
+    </div>`);
+}
+function submitRecComment(id){
+  if(!USER||USER.guest){toast('Bitte melde dich an um zu kommentieren');return;}
+  const inp=document.getElementById('rcmt-inp-'+id);
+  const text=(inp&&inp.value||'').trim();
+  if(!text)return;
+  if(containsBadWord(text)){toast('⚠️ Bitte respektvolle Sprache verwenden.');return;}
+  const c={localId:'rc_'+Date.now(),who:USER.name,color:USER.color,initials:USER.initials,text,time:'gerade eben'};
+  if(!REC_COMMENTS[id])REC_COMMENTS[id]=[];
+  REC_COMMENTS[id].push(c);
+  const rec=RECS.find(x=>x.id===id);
+  renderRecCommentsSheet(id,rec);
+  renderRecs();
+}
+function deleteRecComment(recId,localId){
+  if(!REC_COMMENTS[recId])return;
+  REC_COMMENTS[recId]=REC_COMMENTS[recId].filter(c=>c.localId!==localId);
+  DELETED_REC_COMMENT_IDS.add(localId);
+  const rec=RECS.find(x=>x.id===recId);
+  renderRecCommentsSheet(recId,rec);
+  renderRecs();
+}
+function openAddRec(){
+  if(!isAdmin){toast('Nur Admins können Tipps hinzufügen');return;}
+  const cats=['Sehenswürdigkeit','Natur','Gastronomie','Café','Ausflugsziel','Lost Place'];
+  const icons=['photo_camera','park','restaurant','local_cafe','pets','castle','forest','hiking','beach_access','museum'];
+  const colors=['#0097A7','#2E7D32','#EF6C00','#8D6E63','#00897B','#455A64','#558B2F','#C2185B','#1976D2','#8E24AA'];
+  showSheet(`
+    <div class="sheet-handle"></div>
+    <div class="sheet-body">
+      <div class="sheet-title" style="margin-bottom:16px">✨ Neuen Tipp hinzufügen</div>
+      <div class="field"><label>Titel</label><input id="ar-t" placeholder="Name des Ortes"></div>
+      <div class="field"><label>Kategorie</label><select id="ar-cat">${cats.map(c=>`<option>${c}</option>`).join('')}</select></div>
+      <div class="field"><label>Beschreibung</label><textarea id="ar-desc" placeholder="Was macht diesen Ort besonders?"></textarea></div>
+      <div class="field"><label>Ort</label><input id="ar-loc" placeholder="z.B. Bleckede"></div>
+      <div class="field"><label>Öffnungszeiten</label><input id="ar-open" placeholder="z.B. 10:00–18:00"></div>
+      <div class="field"><label>Icon</label><select id="ar-ico">${icons.map(i=>`<option>${i}</option>`).join('')}</select></div>
+      <div class="field"><label>Farbe</label><select id="ar-color">${colors.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+      <button class="btn" onclick="saveRec()"><span class="ms">add_location_alt</span>Tipp veröffentlichen</button>
+    </div>`);
+}
+function saveRec(){
+  const t=document.getElementById('ar-t').value.trim();
+  if(!t){toast('Bitte Titel eingeben');return;}
+  const rec={
+    id:'r'+Date.now(),cat:document.getElementById('ar-cat').value,
+    t,ico:document.getElementById('ar-ico').value,rating:5.0,userRating:0,
+    desc:document.getElementById('ar-desc').value||'Neu hinzugefügt.',
+    loc:document.getElementById('ar-loc').value||'Elbe Valley',
+    open:document.getElementById('ar-open').value||'Täglich geöffnet',
+    color:document.getElementById('ar-color').value
+  };
+  RECS.unshift(rec);
+  closeSheet();renderRecs();toast('Tipp hinzugefügt ✅');
+}
+function deleteRec(id){
+  if(!isAdmin){toast('Nur Admins können Tipps entfernen');return;}
+  if(!confirm('Tipp wirklich löschen?'))return;
+  const idx=RECS.findIndex(x=>x.id===id);
+  if(idx>-1){RECS.splice(idx,1);renderRecs();toast('Tipp gelöscht 🗑️');}
+}
 function renderRecs(){
   const chips=['Alle','Sehenswürdigkeit','Natur','Gastronomie','Café','Ausflugsziel','Lost Place'];
-  document.getElementById('rec-chips').innerHTML=chips.map(c=>`<div class="chip ${recFilter===c?'on':''}" onclick="recFilter='${c}';renderRecs()">${c}</div>`).join('');
-  document.getElementById('rec-list').innerHTML=RECS.filter(r=>recFilter==='Alle'||r.cat===recFilter).map(r=>`
-    <div class="rec-card">
-      <div style="position:relative"><div class="rec-img" style="background:linear-gradient(135deg,${r.color},${shade(r.color)});display:grid;place-items:center"><span class="ms" style="font-size:52px;color:#fff;opacity:.85">${r.ico}</span></div>
-      <div class="rec-badge">${r.cat}</div></div>
-      <div class="rec-info">
-        <div class="rec-title">${r.t}<span class="rec-rating"><span class="ms" style="font-size:15px">star</span>${r.rating}</span></div>
-        <div class="rec-desc">${r.desc}</div>
-        <div class="rec-foot"><span><span class="ms" style="font-size:16px">location_on</span>${r.loc}</span><span><span class="ms" style="font-size:16px">schedule</span>${r.open}</span></div>
-        <button class="btn secondary" style="margin-top:12px" onclick="toast('Navigation gestartet 🧭')"><span class="ms">directions</span>Route</button>
+  const chipsEl=document.getElementById('rec-chips');
+  if(!chipsEl)return;
+  chipsEl.innerHTML=chips.map(c=>`<div class="chip ${recFilter===c?'on':''}" onclick="recFilter='${c}';renderRecs()">${c}</div>`).join('');
+  const list=document.getElementById('rec-list');
+  if(!list)return;
+  const filtered=RECS.filter(r=>recFilter==='Alle'||r.cat===recFilter);
+  list.innerHTML=(isAdmin?`<div style="padding:0 16px 4px"><button class="btn" style="margin:0" onclick="openAddRec()"><span class="ms">add</span>Tipp hinzufügen (Admin)</button></div>`:'')
+  +filtered.map(r=>{
+    const cmtCount=(REC_COMMENTS[r.id]||[]).length;
+    return `<div class="rec-card-glass">
+      <div class="rec-hero" style="background:linear-gradient(135deg,${r.color},${shade(r.color)})">
+        <span class="ms rec-hero-icon">${r.ico}</span>
+        <div class="rec-hero-overlay"></div>
+        <div class="rec-hero-badge">${r.cat}</div>
+        ${isAdmin?`<div class="rec-hero-admin">
+          <button onclick="deleteRec('${r.id}')" style="background:rgba(229,57,53,.85);border:none;border-radius:12px;padding:6px 10px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:inherit;font-size:12px;font-weight:600;backdrop-filter:blur(8px)"><span class="ms" style="font-size:16px">delete</span>Löschen</button>
+        </div>`:''}
       </div>
-    </div>`).join('');
+      <div class="rec-body">
+        <div class="rec-title-row">
+          <div class="rec-title-text">${r.t}</div>
+          <div class="rec-stars">${starsHtml(r)}</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:500">Ø ${r.rating} · ${[1,2,3,4,5].map(i=>`<span style="color:${i<=Math.round(r.rating)?'#F59E0B':'#ddd'}">★</span>`).join('')}</div>
+        <div class="rec-desc-text">${r.desc}</div>
+        <div class="rec-meta-row">
+          <span><span class="ms" style="font-size:16px">location_on</span>${r.loc}</span>
+          <span><span class="ms" style="font-size:16px">schedule</span>${r.open}</span>
+        </div>
+        <div class="rec-comment-count" onclick="openRecComments('${r.id}')">
+          <span class="ms" style="font-size:18px">chat_bubble</span>
+          ${cmtCount} Kommentar${cmtCount!==1?'e':''}
+        </div>
+        <div class="rec-actions">
+          <button class="btn secondary" style="margin:0;flex:1" onclick="toast('Navigation gestartet 🧭')"><span class="ms">directions</span>Route</button>
+          <button class="btn" style="margin:0;flex:1" onclick="openRecComments('${r.id}')"><span class="ms">chat_bubble</span>Kommentieren</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 /* ============ PORTAL ============ */
@@ -1184,9 +1529,66 @@ function portalTab(t,btn){
   document.getElementById('portal-official').style.display=t==='official'?'block':'none';
 }
 const STATUS={neu:['st-neu','Neu'],prog:['st-prog','In Bearbeitung'],done:['st-done','Erledigt']};
+const ISSUE_COMMENTS = {};
+const DELETED_ISSUE_COMMENT_IDS = new Set();
+function openIssueComments(id){
+  const issue=ISSUES.find(x=>String(x.id)===String(id));
+  if(!issue)return;
+  if(!ISSUE_COMMENTS[id])ISSUE_COMMENTS[id]=[];
+  renderIssueCommentsSheet(id,issue);
+}
+function renderIssueCommentsSheet(id,issue){
+  const comments=ISSUE_COMMENTS[id]||[];
+  const canDel=(c)=>USER&&(isAdmin||c.who===USER.name);
+  const cHtml=comments.length===0
+    ?'<div style="text-align:center;padding:30px;color:var(--muted)"><span class="ms" style="font-size:36px;display:block;opacity:.4">chat_bubble</span>Noch keine Kommentare.</div>'
+    :comments.map(c=>`<div class="comment">
+        <div class="comment-avatar" style="background:${c.color}">${c.initials}</div>
+        <div class="comment-body">
+          <div class="comment-name">${c.who}</div>
+          <div class="comment-text">${c.text}</div>
+          <div class="comment-time">${c.time}</div>
+        </div>
+        ${canDel(c)?`<button onclick="deleteIssueComment('${id}','${c.localId}')" style="background:none;border:none;color:#E53935;cursor:pointer;padding:4px"><span class="ms" style="font-size:20px">delete</span></button>`:''}
+      </div>`).join('');
+  showSheet(`
+    <div class="sheet-handle"></div>
+    <div style="padding:14px 18px 10px;border-bottom:1px solid var(--line)">
+      <div style="font-weight:800;font-size:18px">Diskussion</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">${issue.t}</div>
+    </div>
+    <div style="padding:0 18px 100px">${cHtml}</div>
+    <div class="comment-input-wrap">
+      <div class="comment-avatar" style="background:${USER?USER.color:'#90A4AE'}">${USER?USER.initials:'G'}</div>
+      <input id="icmt-inp-${id}" placeholder="Kommentar zum Anliegen…" onkeydown="if(event.key==='Enter')submitIssueComment('${id}')">
+      <button class="comment-send" onclick="submitIssueComment('${id}')"><span class="ms">send</span></button>
+    </div>`);
+}
+function submitIssueComment(id){
+  if(!USER||USER.guest){toast('Bitte melde dich an');return;}
+  const inp=document.getElementById('icmt-inp-'+id);
+  const text=(inp&&inp.value||'').trim();
+  if(!text)return;
+  if(containsBadWord(text)){toast('⚠️ Bitte respektvolle Sprache verwenden.');return;}
+  const c={localId:'ic_'+Date.now(),who:USER.name,color:USER.color,initials:USER.initials,text,time:'gerade eben'};
+  if(!ISSUE_COMMENTS[id])ISSUE_COMMENTS[id]=[];
+  ISSUE_COMMENTS[id].push(c);
+  const issue=ISSUES.find(x=>String(x.id)===String(id));
+  renderIssueCommentsSheet(id,issue);
+  renderIssues();
+}
+function deleteIssueComment(issueId,localId){
+  if(!ISSUE_COMMENTS[issueId])return;
+  ISSUE_COMMENTS[issueId]=ISSUE_COMMENTS[issueId].filter(c=>c.localId!==localId);
+  DELETED_ISSUE_COMMENT_IDS.add(localId);
+  const issue=ISSUES.find(x=>String(x.id)===String(issueId));
+  renderIssueCommentsSheet(issueId,issue);
+  renderIssues();
+}
 function renderIssues(){
   document.getElementById('issue-list').innerHTML=ISSUES.map(i=>{
     const s=STATUS[i.status];
+    const cmtCount=(ISSUE_COMMENTS[i.id]||[]).length;
     return `<div class="issue">
       <div class="issue-top"><div class="issue-title">${i.t}</div><span class="status ${s[0]}">${s[1]}</span></div>
       <div class="issue-meta"><span class="ms" style="font-size:15px">sell</span>${i.cat} · <span class="ms" style="font-size:15px">location_on</span>${i.loc}</div>
@@ -1194,7 +1596,8 @@ function renderIssues(){
       <div class="vote">
         <button class="up ${i.myvote==='up'?'on':''}" onclick="vote('${i.id}','up')"><span class="ms">thumb_up</span>${i.up}</button>
         <button class="down ${i.myvote==='down'?'on':''}" onclick="vote('${i.id}','down')"><span class="ms">thumb_down</span>${i.down}</button>
-        <button style="margin-left:auto;border:none;background:none;color:var(--muted)" onclick="toast('Kommentare in Demo simuliert')"><span class="ms">chat_bubble</span></button>
+        <button style="margin-left:auto;border:none;background:none;color:var(--muted);display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600" onclick="openIssueComments('${i.id}')"><span class="ms">chat_bubble</span>${cmtCount>0?cmtCount:''}</button>
+        ${isAdmin?`<button style="border:none;background:none;color:#E53935;cursor:pointer" onclick="if(confirm('Anliegen löschen?')){ISSUES.splice(ISSUES.indexOf(ISSUES.find(x=>x.id==='${i.id}')),1);renderIssues()}"><span class="ms">delete</span></button>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1252,7 +1655,7 @@ function renderProfile(){
     </div>
     ${u.guest?`<div class="pad"><div class="card" style="padding:18px;text-align:center"><span class="ms" style="font-size:40px;color:var(--green)">person_add</span><div style="font-weight:700;margin:8px 0 4px">Erstelle dein Profil</div><div style="font-size:13px;color:var(--muted);margin-bottom:14px">Als Gast kannst du nur schauen. Mit einem Profil kannst du Pins und Beiträge erstellen.</div><button class="btn" style="margin:0" onclick="logout()">Jetzt Profil erstellen</button></div></div>`:`
     <div class="sec-title" style="font-size:15px">Interessen</div>
-    <div class="interests"><span class="int-chip">🥾 Wandern</span><span class="int-chip">📷 Fotografie</span><span class="int-chip">🌿 Natur</span><span class="int-chip">🚴 Radfahren</span></div>`}
+    <div class="interests">${(u.interests&&u.interests.length>0?u.interests:['🥾 Wandern','📷 Fotografie','🌿 Natur']).map(i=>`<span class='int-chip'>${i}</span>`).join('')}</div>`}
     <div class="sec-title" style="font-size:15px">Mein Bereich</div>
     <div style="margin-bottom:16px">
       <div class="menu-item" onclick="toast('Deine Aktivitäten')"><span class="ms">event</span><div class="txt">Eigene Aktivitäten</div><span class="ms">chevron_right</span></div>
@@ -1300,7 +1703,7 @@ function submitAdminApply(){
     document.getElementById('admin-hdr-btn').style.display='grid';
     document.getElementById('notif-dot').style.display='block';
     closeSheet();
-    renderProfile();
+    renderAll(); // Re-render everything so admin controls appear everywhere
     showAdminWelcome();
   },1800);
 }
@@ -1330,6 +1733,7 @@ function openAdmin(){
     </div></div>
     <div class="menu-item" style="border-radius:14px;margin:0 0 8px;border:1px solid var(--line)" onclick="closeSheet();go('map',document.querySelector('#nav button'));toast('Pins moderieren: auf Karte antippen')"><span class="ms">wrong_location</span><div class="txt">Pins moderieren</div><span class="ms">chevron_right</span></div>
     <div class="menu-item" style="border-radius:14px;margin:0 0 8px;border:1px solid var(--line)" onclick="toast('Beitrag zur Prüfung markiert')"><span class="ms">flag</span><div class="txt">Beiträge moderieren</div><span class="ms">chevron_right</span></div>
+    <div class="menu-item" style="border-radius:14px;margin:0 0 8px;border:1px solid var(--line)" onclick="closeSheet();go('rec',document.querySelectorAll('#nav button')[2]);setTimeout(()=>toast('Du kannst jetzt Tipps hinzufügen oder löschen ✅'),300)"><span class="ms">star</span><div class="txt">Top Tipps verwalten</div><span class="ms">chevron_right</span></div>
     <div class="menu-item" style="border-radius:14px;margin:0 0 8px;border:1px solid var(--line)" onclick="closeSheet();go('portal',document.querySelectorAll('#nav button')[3]);toast('Anliegen-Status ändern')"><span class="ms">fact_check</span><div class="txt">Bürgeranliegen verwalten</div><span class="ms">chevron_right</span></div>
     <div class="menu-item" style="border-radius:14px;margin:0;border:1px solid var(--line)" onclick="publishOfficial()"><span class="ms">campaign</span><div class="txt">Amtliche Info veröffentlichen</div><span class="ms">chevron_right</span></div>
   </div>`);
