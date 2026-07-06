@@ -41,13 +41,13 @@
   .nav button.on .ms{font-variation-settings:'FILL' 1;transform:translateY(-1px)}
   #map{width:100%;flex:1;min-height:300px;z-index:1}
   .map-wrap{flex:1;position:relative;display:flex;flex-direction:column}
-  .map-controls{background:var(--bg);padding:12px 14px 10px;border-bottom:1px solid var(--line);z-index:15}
+  .map-controls{background:var(--bg);padding:12px 14px 10px;border-bottom:1px solid var(--line)}
   .map-search{display:flex;gap:8px;margin-bottom:10px}
   .map-search input{flex:1;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:13px 16px;font-family:inherit;font-size:14px;box-shadow:var(--shadow);outline:none}
   .filterbtn{background:var(--green);color:#fff;border:none;border-radius:14px;padding:0 16px;display:flex;align-items:center;gap:6px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;box-shadow:var(--shadow)}
   .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
-  .chips-bar{position:sticky;top:0;z-index:15;display:flex;gap:8px;padding:10px 14px;overflow-x:auto;scrollbar-width:none;background:var(--bg);border-bottom:1px solid var(--line)}
+  .chips-bar{position:sticky;top:0;z-index:10;display:flex;gap:8px;padding:10px 14px;overflow-x:auto;scrollbar-width:none;background:var(--bg);border-bottom:1px solid var(--line)}
   .chips-bar::-webkit-scrollbar{display:none}
   .chip{white-space:nowrap;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;gap:5px;transition:.2s}
   .chip.on{background:var(--green);color:#fff;border-color:var(--green)}
@@ -197,6 +197,43 @@
   .verify-cam{width:100%;height:160px;background:rgba(0,0,0,.25);border-radius:12px;display:grid;place-items:center;margin-bottom:12px;position:relative;overflow:hidden}
   .verify-scan{position:absolute;left:0;right:0;height:3px;background:var(--green2);box-shadow:0 0 12px var(--green2);animation:scan 2s ease-in-out infinite}
   @keyframes scan{0%,100%{top:15%}50%{top:85%}}
+
+  /* ── ANIMATED LOGIN ── */
+  .login{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;overflow:hidden}
+  .login.hide{display:none}
+  .login-canvas{position:absolute;inset:0;background:linear-gradient(180deg,#071A52 0%,#0D47A1 45%,#1976D2 70%,#4CAF50 70%,#2E7D32 100%)}
+  .login-svg{position:absolute;inset:0;width:100%;height:100%}
+  .login-overlay{position:absolute;inset:0;background:linear-gradient(to bottom, rgba(7,26,82,.3) 0%, rgba(7,26,82,.1) 40%, rgba(7,26,82,.6) 100%)}
+  .login-content{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;height:100%;padding:40px 30px;color:#fff;overflow-y:auto}
+  .login-content-inner{display:block}
+  .logo-badge{width:72px;height:72px;border-radius:20px;background:rgba(255,255,255,.18);backdrop-filter:blur(12px);display:grid;place-items:center;margin-bottom:16px;border:1px solid rgba(255,255,255,.3);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+  .login h1{font-size:36px;font-weight:800;letter-spacing:-1px;line-height:1.05}
+  .login .slogan{font-size:15px;opacity:.9;margin-top:8px;margin-bottom:28px}
+  .login-btns{display:flex;flex-direction:column;gap:12px}
+  .lbtn{padding:16px;border-radius:16px;border:none;font-family:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+  .lbtn:active{transform:scale(.98)}
+  .lbtn.primary{background:#fff;color:var(--green)}
+  .lbtn.ghost{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px)}
+  .lbtn.text{background:none;color:#fff;opacity:.85;font-weight:600}
+  .login-field{margin-bottom:14px}
+  .login-field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px;opacity:.9}
+  .login-field input{width:100%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);border-radius:14px;padding:14px 16px;font-family:inherit;font-size:16px;color:#fff;outline:none;backdrop-filter:blur(8px)}
+  .login-field input::placeholder{color:rgba(255,255,255,.6)}
+  .login-back{position:absolute;top:20px;left:20px;background:rgba(255,255,255,.2);border:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(8px);z-index:5}
+  .login-back .ms{color:#fff}
+  .acct-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .acct-opt{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:14px;padding:13px 8px;text-align:center;cursor:pointer;font-size:13px;font-weight:600;color:#fff;transition:.18s;display:flex;flex-direction:column;align-items:center;gap:5px}
+  .acct-opt .ms{font-size:24px}
+  .acct-opt.on{background:#fff;color:var(--green);border-color:#fff}
+  .verify-box{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:16px;padding:18px;margin-bottom:14px;text-align:center}
+  .verify-cam{width:100%;height:160px;background:rgba(0,0,0,.25);border-radius:12px;display:grid;place-items:center;margin-bottom:12px;position:relative;overflow:hidden}
+  .verify-scan{position:absolute;left:0;right:0;height:3px;background:#42A5F5;box-shadow:0 0 12px #42A5F5;animation:scan 2s ease-in-out infinite}
+  @keyframes scan{0%,100%{top:15%}50%{top:85%}}
+  @keyframes float{0%,100%{transform:translateX(0)}50%{transform:translateX(-80px)}}
+  @keyframes float2{0%,100%{transform:translateX(0)}50%{transform:translateX(60px)}}
+  @keyframes cloudmove{0%{transform:translateX(-20px)}100%{transform:translateX(20px)}}
+  @keyframes birdfly{0%{transform:translateX(0) translateY(0)}25%{transform:translateX(40px) translateY(-10px)}50%{transform:translateX(80px) translateY(0)}75%{transform:translateX(120px) translateY(-8px)}100%{transform:translateX(160px) translateY(0)}}
+  @keyframes waterflow{0%{transform:translateX(0)}100%{transform:translateX(40px)}}
   .empty{text-align:center;padding:50px 30px;color:var(--muted)}
   .empty .ms{font-size:52px;opacity:.4;margin-bottom:12px}
   .spinner{width:44px;height:44px;border:4px solid var(--green-soft);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
@@ -204,6 +241,18 @@
   .fb-status.local{background:#E67E00;display:block}
   .fb-status.live{background:var(--green);display:block;animation:fadeout 3s forwards}
   @keyframes fadeout{0%,70%{opacity:1}100%{opacity:0;display:none}}
+
+  /* ── COMMENTS ── */
+  .comment{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .comment:last-child{border-bottom:none}
+  .comment-avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+  .comment-body{flex:1}
+  .comment-name{font-weight:700;font-size:13px;display:flex;align-items:center;gap:5px}
+  .comment-text{font-size:13.5px;line-height:1.45;margin-top:3px}
+  .comment-time{font-size:11px;color:var(--muted);margin-top:3px}
+  .comment-input-wrap{position:sticky;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px 14px;display:flex;gap:10px;align-items:center}
+  .comment-input-wrap input{flex:1;border:1.5px solid var(--line);background:var(--bg);border-radius:22px;padding:11px 16px;font-family:inherit;font-size:14px;outline:none}
+  .comment-send{width:42px;height:42px;border-radius:50%;background:var(--green);color:#fff;border:none;display:grid;place-items:center;cursor:pointer;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -213,18 +262,140 @@
 
   <!-- LOGIN -->
   <div class="login" id="login">
-    <div id="login-main">
-      <div class="logo-badge"><span class="ms">forest</span></div>
-      <h1>ElbeValley</h1>
-      <p class="slogan">Die Region kommt zusammen.</p>
-      <div class="login-btns">
-        <button class="lbtn primary" onclick="showRegister()"><span class="ms">person_add</span>Profil erstellen</button>
-        <button class="lbtn ghost" onclick="showLogin()"><span class="ms">login</span>Anmelden</button>
-      </div>
-    </div>
 
+    <!-- Animated nature background -->
+    <div class="login-canvas"></div>
+    <svg class="login-svg" viewBox="0 0 440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- Stars -->
+      <g opacity="0.7">
+        <circle cx="60" cy="80" r="1.5" fill="white" opacity="0.9"><animate attributeName="opacity" values="0.9;0.2;0.9" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="140" cy="50" r="1" fill="white" opacity="0.7"><animate attributeName="opacity" values="0.7;0.1;0.7" dur="2.3s" repeatCount="indefinite"/></circle>
+        <circle cx="220" cy="90" r="1.5" fill="white" opacity="0.8"><animate attributeName="opacity" values="0.8;0.2;0.8" dur="4s" repeatCount="indefinite"/></circle>
+        <circle cx="320" cy="40" r="1" fill="white" opacity="0.6"><animate attributeName="opacity" values="0.6;0.1;0.6" dur="2.8s" repeatCount="indefinite"/></circle>
+        <circle cx="390" cy="100" r="1.5" fill="white" opacity="0.9"><animate attributeName="opacity" values="0.9;0.3;0.9" dur="3.5s" repeatCount="indefinite"/></circle>
+        <circle cx="80" cy="150" r="1" fill="white" opacity="0.5"><animate attributeName="opacity" values="0.5;0.1;0.5" dur="2s" repeatCount="indefinite"/></circle>
+        <circle cx="280" cy="120" r="1.5" fill="white" opacity="0.8"><animate attributeName="opacity" values="0.8;0.2;0.8" dur="3.2s" repeatCount="indefinite"/></circle>
+      </g>
+      <!-- Moon -->
+      <circle cx="360" cy="70" r="28" fill="#FFF9C4" opacity="0.9"/>
+      <circle cx="372" cy="58" r="22" fill="#0D47A1" opacity="0.6"/>
+      <!-- Clouds -->
+      <g style="animation:cloudmove 6s ease-in-out infinite alternate">
+        <ellipse cx="100" cy="180" rx="55" ry="20" fill="white" opacity="0.15"/>
+        <ellipse cx="130" cy="170" rx="40" ry="18" fill="white" opacity="0.12"/>
+      </g>
+      <g style="animation:cloudmove 8s ease-in-out infinite alternate-reverse">
+        <ellipse cx="300" cy="140" rx="50" ry="18" fill="white" opacity="0.1"/>
+        <ellipse cx="270" cy="132" rx="35" ry="15" fill="white" opacity="0.08"/>
+      </g>
+      <!-- Birds -->
+      <g style="animation:birdfly 12s linear infinite" opacity="0.7">
+        <path d="M30 220 Q35 215 40 220 Q45 215 50 220" stroke="white" stroke-width="1.5" fill="none"/>
+        <path d="M55 210 Q59 205 63 210 Q67 205 71 210" stroke="white" stroke-width="1.5" fill="none"/>
+      </g>
+      <!-- Hills far background -->
+      <path d="M0 480 Q80 420 160 450 Q240 380 320 430 Q380 400 440 440 L440 620 L0 620Z" fill="#1A237E" opacity="0.5"/>
+      <!-- Elbe river reflection -->
+      <path d="M0 570 Q110 555 220 565 Q330 555 440 570 L440 620 L0 620Z" fill="#1565C0" opacity="0.5"/>
+      <path d="M0 575 Q80 568 160 572 Q280 562 440 575" stroke="#42A5F5" stroke-width="2" fill="none" opacity="0.4" style="animation:waterflow 3s ease-in-out infinite alternate"/>
+      <path d="M0 582 Q120 576 220 580 Q340 572 440 582" stroke="#90CAF9" stroke-width="1.5" fill="none" opacity="0.3" style="animation:waterflow 4s ease-in-out infinite alternate-reverse"/>
+      <!-- Far hills / land -->
+      <path d="M0 520 Q60 490 120 510 Q180 480 240 505 Q300 485 360 500 Q400 490 440 510 L440 570 L0 570Z" fill="#1B5E20" opacity="0.7"/>
+      <!-- Village - church/steeple -->
+      <g transform="translate(290,440)">
+        <rect x="0" y="30" width="22" height="30" fill="#263238"/>
+        <polygon points="11,0 -6,30 28,30" fill="#37474F"/>
+        <rect x="8" y="38" width="6" height="10" fill="#FFF9C4" opacity="0.8"><animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite"/></rect>
+      </g>
+      <!-- Village houses right -->
+      <g transform="translate(340,465)">
+        <rect x="0" y="20" width="28" height="22" fill="#37474F"/>
+        <polygon points="14,0 -2,20 30,20" fill="#455A64"/>
+        <rect x="4" y="26" width="7" height="8" fill="#FFF9C4" opacity="0.6"><animate attributeName="opacity" values="0.6;0.2;0.6" dur="3s" repeatCount="indefinite"/></rect>
+        <rect x="17" y="26" width="7" height="8" fill="#FFF9C4" opacity="0.7"><animate attributeName="opacity" values="0.7;0.3;0.7" dur="2.5s" repeatCount="indefinite"/></rect>
+      </g>
+      <!-- Village houses left -->
+      <g transform="translate(60,470)">
+        <rect x="0" y="18" width="30" height="24" fill="#37474F"/>
+        <polygon points="15,0 -3,18 33,18" fill="#455A64"/>
+        <rect x="4" y="24" width="8" height="9" fill="#FFF9C4" opacity="0.5"><animate attributeName="opacity" values="0.5;0.2;0.5" dur="3.5s" repeatCount="indefinite"/></rect>
+        <rect x="18" y="24" width="8" height="9" fill="#FFF9C4" opacity="0.6"><animate attributeName="opacity" values="0.6;0.2;0.6" dur="2.8s" repeatCount="indefinite"/></rect>
+      </g>
+      <!-- Foreground trees left -->
+      <g transform="translate(0,500)">
+        <rect x="18" y="60" width="6" height="40" fill="#1B5E20"/>
+        <ellipse cx="21" cy="50" rx="20" ry="30" fill="#2E7D32"/>
+        <ellipse cx="21" cy="40" rx="14" ry="22" fill="#388E3C"/>
+      </g>
+      <g transform="translate(20,510)">
+        <rect x="12" y="50" width="5" height="35" fill="#1B5E20"/>
+        <ellipse cx="14" cy="42" rx="16" ry="24" fill="#1B5E20"/>
+        <ellipse cx="14" cy="33" rx="11" ry="17" fill="#2E7D32"/>
+      </g>
+      <!-- Foreground trees right -->
+      <g transform="translate(390,495)">
+        <rect x="18" y="60" width="6" height="45" fill="#1B5E20"/>
+        <ellipse cx="21" cy="48" rx="22" ry="32" fill="#2E7D32"/>
+        <ellipse cx="21" cy="36" rx="15" ry="23" fill="#388E3C"/>
+      </g>
+      <g transform="translate(410,508)">
+        <rect x="10" y="50" width="5" height="38" fill="#1B5E20"/>
+        <ellipse cx="12" cy="40" rx="15" ry="22" fill="#1B5E20"/>
+        <ellipse cx="12" cy="30" rx="10" ry="16" fill="#2E7D32"/>
+      </g>
+      <!-- Fence / meadow foreground -->
+      <path d="M0 590 Q220 575 440 590 L440 620 L0 620Z" fill="#2E7D32" opacity="0.9"/>
+      <path d="M0 600 Q180 588 440 600 L440 620 L0 620Z" fill="#388E3C" opacity="0.8"/>
+      <!-- Dark gradient overlay bottom for text readability -->
+      <rect x="0" y="550" width="440" height="350" fill="url(#bottomGrad)"/>
+      <defs>
+        <linearGradient id="bottomGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#071A52" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#071A52" stop-opacity="0.85"/>
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <!-- Content on top -->
+    <div class="login-content">
+      <div class="login-content-inner" id="login-main">
+        <!-- Logo -->
+        <div class="logo-badge">
+          <svg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
+            <!-- River wave -->
+            <path d="M4 26 Q10 22 16 26 Q22 30 28 26 Q34 22 40 26" stroke="#42A5F5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M4 30 Q10 26 16 30 Q22 34 28 30 Q34 26 40 30" stroke="#90CAF9" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+            <!-- Hill / land -->
+            <path d="M2 35 Q10 22 21 26 Q32 22 40 35 L40 40 L2 40Z" fill="#2E7D32" opacity="0.9"/>
+            <!-- Tree left -->
+            <rect x="8" y="26" width="2.5" height="8" fill="#1B5E20"/>
+            <ellipse cx="9.25" cy="22" rx="6" ry="8" fill="#388E3C"/>
+            <!-- Tree right -->
+            <rect x="30" y="24" width="2.5" height="10" fill="#1B5E20"/>
+            <ellipse cx="31.25" cy="20" rx="6" ry="9" fill="#2E7D32"/>
+            <!-- Church/steeple -->
+            <rect x="18" y="20" width="6" height="14" fill="#37474F"/>
+            <polygon points="21,13 15,20 27,20" fill="#455A64"/>
+            <!-- Sky dot / star -->
+            <circle cx="35" cy="10" r="1.5" fill="#FFF9C4" opacity="0.9"/>
+            <circle cx="12" cy="8" r="1" fill="white" opacity="0.7"/>
+            <!-- Moon -->
+            <circle cx="28" cy="8" r="5" fill="#FFF9C4" opacity="0.8"/>
+            <circle cx="30.5" cy="6.5" r="3.5" fill="#0D47A1" opacity="0.7"/>
+          </svg>
+        </div>
+        <h1>ElbeValley</h1>
+        <p class="slogan">Die Region kommt zusammen.</p>
+        <div class="login-btns">
+          <button class="lbtn primary" onclick="showRegister()"><span class="ms">person_add</span>Profil erstellen</button>
+          <button class="lbtn ghost" onclick="showLogin()"><span class="ms">login</span>Anmelden</button>
+          <button class="lbtn text" onclick="enterAsGuest()"><span class="ms">visibility</span>Als Gast ansehen</button>
+        </div>
+      </div>
+
+      </div><!-- end login-content -->
     <!-- REGISTER -->
-    <div id="login-register" style="display:none">
+    <div id="login-register" style="display:none;position:absolute;inset:0;z-index:3;padding:40px 30px;overflow-y:auto;color:#fff">
       <button class="login-back" onclick="loginHome()"><span class="ms">arrow_back</span></button>
       <div style="margin-top:40px">
         <h1 style="font-size:28px">Profil erstellen</h1>
@@ -245,7 +416,7 @@
     </div>
 
     <!-- VERIFY -->
-    <div id="login-verify" style="display:none">
+    <div id="login-verify" style="display:none;position:absolute;inset:0;z-index:3;padding:40px 30px;overflow-y:auto;color:#fff">
       <button class="login-back" onclick="showRegister()"><span class="ms">arrow_back</span></button>
       <div style="margin-top:40px">
         <h1 style="font-size:26px">Foto-Verifizierung</h1>
@@ -260,7 +431,7 @@
     </div>
 
     <!-- LOGIN existing -->
-    <div id="login-signin" style="display:none">
+    <div id="login-signin" style="display:none;position:absolute;inset:0;z-index:3;padding:40px 30px;overflow-y:auto;color:#fff">
       <button class="login-back" onclick="loginHome()"><span class="ms">arrow_back</span></button>
       <div style="margin-top:40px">
         <h1 style="font-size:28px">Anmelden</h1>
@@ -279,16 +450,31 @@
   <!-- HEADER -->
   <div class="hdr" id="hdr">
     <div>
-      <h1 id="hdr-title">Karte</h1>
+      <div style="display:flex;align-items:center;gap:8px">
+        <svg width="28" height="28" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 26 Q10 22 16 26 Q22 30 28 26 Q34 22 40 26" stroke="#42A5F5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M2 35 Q10 22 21 26 Q32 22 40 35 L40 40 L2 40Z" fill="#2E7D32" opacity="0.9"/>
+          <rect x="8" y="26" width="2.5" height="8" fill="#1B5E20"/>
+          <ellipse cx="9.25" cy="22" rx="6" ry="8" fill="#388E3C"/>
+          <rect x="18" y="20" width="6" height="14" fill="#37474F"/>
+          <polygon points="21,13 15,20 27,20" fill="#455A64"/>
+          <circle cx="28" cy="8" r="5" fill="#FFF9C4" opacity="0.9"/>
+          <circle cx="30.5" cy="6.5" r="3.5" fill="#0D47A1" opacity="0.7"/>
+        </svg>
+        <h1 id="hdr-title">Karte</h1>
+      </div>
       <div class="sub" id="hdr-sub">Elbe Valley · Region entdecken</div>
     </div>
-    <div class="hdr-actions">
+    <div class="hdr-actions" id="hdr-actions-normal">
       <button class="iconbtn" onclick="openNotifs()"><span class="ms">notifications</span><span class="badge-dot" id="notif-dot"></span></button>
       <button class="iconbtn" id="admin-hdr-btn" onclick="openAdmin()" title="Admin" style="display:none"><span class="ms">shield_person</span></button>
     </div>
+    <div id="hdr-actions-guest" style="display:none">
+      <button onclick="logout()" style="background:var(--green);color:#fff;border:none;border-radius:14px;padding:10px 16px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 3px 10px rgba(46,125,50,.3)"><span class="ms" style="font-size:18px">person_add</span>Jetzt registrieren</button>
+    </div>
   </div>
 
-  <div class="screen active" id="s-map">
+  <div class="screen active" id="s-map" style="overflow:hidden">
     <div class="map-wrap">
       <div class="map-controls">
         <div class="map-search">
@@ -605,10 +791,44 @@ function doSignin(){
   CURRENT_USER=name;P['me']={n:name,c:USER.color,i:initials};
   enterApp('Willkommen zurück, '+name.split(' ')[0]+'!');
 }
+
+/* ============ GAST WELCOME POPUP ============ */
+function showGuestWelcome(){
+  showSheet(`
+    <div class="sheet-handle"></div>
+    <div class="sheet-body" style="text-align:center">
+      <div style="width:72px;height:72px;border-radius:50%;background:var(--green-soft);display:grid;place-items:center;margin:8px auto 16px">
+        <span class="ms" style="font-size:40px;color:var(--green)">explore</span>
+      </div>
+      <div class="sheet-title" style="text-align:center;margin-bottom:6px">Willkommen in ElbeValley!</div>
+      <p style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:20px">Du schaust dir die App gerade als Gast an. Mit einem kostenlosen Account kannst du noch viel mehr:</p>
+      <div style="display:flex;flex-direction:column;gap:10px;text-align:left;margin-bottom:22px">
+        <div style="display:flex;align-items:center;gap:12px;background:var(--bg);padding:12px 14px;border-radius:14px">
+          <span class="ms" style="font-size:24px;color:var(--green)">add_location_alt</span>
+          <div><div style="font-weight:700;font-size:14px">Eigene Pins erstellen</div><div style="font-size:12px;color:var(--muted)">Lade andere zu deinen Aktivitäten ein</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:var(--bg);padding:12px 14px;border-radius:14px">
+          <span class="ms" style="font-size:24px;color:var(--green)">forum</span>
+          <div><div style="font-weight:700;font-size:14px">Community-Beiträge</div><div style="font-size:12px;color:var(--muted)">Schreibe und kommentiere Beiträge</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:var(--bg);padding:12px 14px;border-radius:14px">
+          <span class="ms" style="font-size:24px;color:var(--green)">chat</span>
+          <div><div style="font-weight:700;font-size:14px">Gruppenchats & Teilnahmen</div><div style="font-size:12px;color:var(--muted)">Melde dich für Aktivitäten an</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:var(--bg);padding:12px 14px;border-radius:14px">
+          <span class="ms" style="font-size:24px;color:var(--green)">campaign</span>
+          <div><div style="font-weight:700;font-size:14px">Bürgeranliegen melden</div><div style="font-size:12px;color:var(--muted)">Hilf mit, die Region zu verbessern</div></div>
+        </div>
+      </div>
+      <button class="btn" style="margin:0 0 10px" onclick="closeSheet();logout()"><span class="ms">person_add</span>Kostenlos registrieren</button>
+      <button class="btn secondary" style="margin:0" onclick="closeSheet()"><span class="ms">explore</span>Erstmal nur schauen</button>
+    </div>`);
+}
+
 function enterAsGuest(){
   USER={name:'Gast',loc:'Region Elbe Valley',initials:'G',color:'#90A4AE',verified:false,guest:true};
   CURRENT_USER='Gast';
-  enterApp('Als Gast angemeldet');
+  enterApp('Als Gast – nur Karte & amtliche Meldungen sichtbar');
 }
 function enterApp(msg){
   isAdmin=false;
@@ -617,6 +837,33 @@ function enterApp(msg){
   setTimeout(()=>{ if(!map) initMap(); else map.invalidateSize(); },120);
   renderAll();
   if(msg)setTimeout(()=>toast(msg),400);
+  if(USER&&USER.guest){
+    const navBtns=document.querySelectorAll('#nav button');
+    navBtns[1].style.display='none';
+    navBtns[2].style.display='none';
+    navBtns[4].style.display='none';
+    // Swap header buttons
+    document.getElementById('hdr-actions-normal').style.display='none';
+    document.getElementById('hdr-actions-guest').style.display='flex';
+    setTimeout(()=>{
+      const portalBtn=navBtns[3];
+      go('portal',portalBtn);
+      document.getElementById('portal-issues').style.display='none';
+      document.querySelector('.seg').style.display='none';
+      document.getElementById('portal-official').style.display='block';
+      renderOfficial();
+      go('map',navBtns[0]);
+    },100);
+    window._guestMode=true;
+    // Show registration benefits popup after short delay
+    setTimeout(showGuestWelcome, 600);
+  } else {
+    window._guestMode=false;
+    document.getElementById('hdr-actions-normal').style.display='flex';
+    document.getElementById('hdr-actions-guest').style.display='none';
+    document.querySelectorAll('#nav button').forEach(b=>b.style.display='');
+    document.querySelector('.seg') && (document.querySelector('.seg').style.display='');
+  }
 }
 
 /* ============ FIREBASE SYNC ============ */
@@ -688,7 +935,13 @@ function openPinDetail(id){
   const p=findPin(id);if(!p)return;const c=CATS[p.cat];const host=P[p.host]||{n:p.hostName||'Community-Mitglied',c:'#2E7D32',i:(p.hostName||'?')[0]};
   const isPending=pendingReqs[id];const isJoined=joinedReqs[id];
   let actionBtn='';
-  if(p.pub){
+  if(window._guestMode){
+    actionBtn=`<div style="background:var(--green-soft);border:1px solid var(--green2);border-radius:16px;padding:14px 16px;text-align:center;margin-top:4px">
+      <div style="font-weight:700;color:var(--green);margin-bottom:6px">✨ Jetzt mitmachen</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Registriere dich kostenlos um teilzunehmen, Anfragen zu senden und den Gruppenchat zu nutzen.</div>
+      <button class="btn" style="margin:0" onclick="closeSheet();logout()"><span class="ms">person_add</span>Kostenlos registrieren</button>
+    </div>`;
+  }else if(p.pub){
     actionBtn=`<button class="btn" onclick="toast('Zu deinem Kalender hinzugefügt 📅')"><span class="ms">event_available</span>Interessiert · Kalender</button>`;
   }else if(isJoined){
     actionBtn=`<button class="btn ok"><span class="ms">check_circle</span>Du nimmst teil</button>
@@ -839,7 +1092,7 @@ function renderFeed(){
       ${post.img?`<div class="post-img" style="display:grid;place-items:center"><span class="ms" style="font-size:44px;color:#fff;opacity:.7">image</span></div>`:''}
       <div class="post-actions">
         <button class="${liked?'liked':''}" onclick="likePost('${post.id}')"><span class="ms">favorite</span><span>${(post.likes||0)+(liked?1:0)}</span></button>
-        <button onclick="toast('Kommentare in Demo simuliert 💬')"><span class="ms">chat_bubble</span><span>${post.comments||0}</span></button>
+        <button onclick="openComments('${post.id}')"><span class="ms">chat_bubble</span><span id="cc-${post.id}">${(post.comments||0)}</span></button>
         <button onclick="toast('Geteilt ✓')"><span class="ms">share</span>Teilen</button>
         ${(USER&&(isAdmin||(post.authorName===USER.name&&!post.anon)))?`<button onclick="deletePost('${post.id}')" style="margin-left:auto;color:#E53935"><span class="ms">delete</span></button>`:''}
       </div>
@@ -986,7 +1239,7 @@ function renderProfile(){
   const myPosts=COMMUNITY.filter(c=>c.who==='me').length;
   document.getElementById('s-profile').innerHTML=`
     <div class="prof-head">
-      <div class="prof-avatar" style="padding:0;overflow:hidden"><img src="data:image/jpeg;base64,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" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>
+      <div class="prof-avatar" style="color:${u.color}">${u.initials}</div>
       <div class="prof-name">${u.name} ${u.verified?'<span class="verified"><span class="ms" style="font-size:14px">verified</span>Verifiziert</span>':''}</div>
       <div class="prof-loc"><span class="ms" style="font-size:17px">location_on</span>${u.loc}</div>
       ${u.acct&&!u.guest?`<div class="prof-loc" style="margin-top:6px"><span class="verified" style="background:rgba(255,255,255,.25)"><span class="ms" style="font-size:14px">${ACCOUNT_TYPES[u.acct].ico}</span>${ACCOUNT_TYPES[u.acct].label}</span>${u.email?`<span style="font-size:13px;opacity:.85;margin-left:8px"><span class="ms" style="font-size:14px;vertical-align:-2px">mail</span> ${u.email}</span>`:''}</div>`:''}
@@ -1113,6 +1366,118 @@ function showSheet(html){document.getElementById('sheet').innerHTML=html;documen
 function closeSheet(){document.getElementById('overlay').classList.remove('show');}
 function toast(msg){const t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
 function shade(hex){const n=parseInt(hex.slice(1),16);let r=(n>>16)-30,g=((n>>8)&255)-30,b=(n&255)-30;r=Math.max(0,r);g=Math.max(0,g);b=Math.max(0,b);return'#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');}
+
+/* ============ COMMENTS ============ */
+const POST_COMMENTS = {};
+// Seed some comments for demo posts
+POST_COMMENTS['sc1']=[
+  {who:'tom',name:'Tom Herzog',color:'#1976D2',initials:'TH',text:'Super Idee! Ich bin dabei, fahre samstags eh durch.',time:'vor 1 Std'},
+  {who:'petra',name:'Petra Wolf',color:'#5E35B1',initials:'PW',text:'Ich würde auch gerne mitfahren! Wo genau startet ihr?',time:'vor 45 Min'},
+];
+POST_COMMENTS['sc2']=[
+  {who:'maria',name:'Maria Kessler',color:'#C2185B',initials:'MK',text:'Wunderschön! Dieser Sonnenuntergang war wirklich magisch 🌅',time:'vor 3 Std'},
+  {who:'lena',name:'Lena Brandt',color:'#1565C0',initials:'LB',text:'Das nächste Mal unbedingt bescheid geben! Will dabei sein.',time:'vor 2 Std'},
+];
+POST_COMMENTS['sc4']=[
+  {who:'bernd',name:'Bernd Stahl',color:'#3949AB',initials:'BS',text:'Ich singe Bariton, wäre das was für euren Chor?',time:'gestern'},
+];
+
+async function openComments(postId){
+  const post = COMMUNITY.find(p=>String(p.id)===String(postId));
+  if(!post)return;
+  if(!POST_COMMENTS[postId]) POST_COMMENTS[postId]=[];
+  renderCommentsSheet(postId, post);
+}
+function renderCommentsSheet(postId, post){
+  const comments = POST_COMMENTS[postId]||[];
+  const commentsHtml = comments.length===0
+    ? '<div style="text-align:center;padding:30px;color:var(--muted)"><span class="ms" style="font-size:36px;display:block;opacity:.4">chat_bubble</span>Noch keine Kommentare. Sei der Erste!</div>'
+    : comments.map(c=>`
+        <div class="comment">
+          <div class="comment-avatar" style="background:${c.color}">${c.initials}</div>
+          <div class="comment-body">
+            <div class="comment-name">${c.name}${c.verified?'<span class="ms" style="font-size:14px;color:var(--green)">verified</span>':''}</div>
+            <div class="comment-text">${c.text}</div>
+            <div class="comment-time">${c.time}</div>
+          </div>
+          ${(USER&&(isAdmin||(c.who===CURRENT_USER)))?`<button onclick="deleteComment('${postId}','${c.who}','${c.time.replace(/'/g,'')}');renderCommentsSheet('${postId}',COMMUNITY.find(p=>String(p.id)==='${postId}'))" style="background:none;border:none;color:#E53935;cursor:pointer;align-self:flex-start"><span class="ms" style="font-size:18px">delete</span></button>`:''}
+        </div>`).join('');
+  showSheet(`
+    <div class="sheet-handle"></div>
+    <div style="padding:14px 18px 10px;border-bottom:1px solid var(--line)">
+      <div style="font-weight:800;font-size:18px">Kommentare</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">${post.body.substring(0,60)}${post.body.length>60?'…':''}</div>
+    </div>
+    <div style="padding:0 18px;flex:1">${commentsHtml}</div>
+    <div class="comment-input-wrap">
+      <div class="comment-avatar" style="background:${USER?USER.color:'#90A4AE'}">${USER?USER.initials:'G'}</div>
+      <input id="cmt-inp-${postId}" placeholder="Kommentar schreiben…" onkeydown="if(event.key==='Enter')submitComment('${postId}')">
+      <button class="comment-send" onclick="submitComment('${postId}')"><span class="ms">send</span></button>
+    </div>`);
+}
+async function submitComment(postId){
+  if(!USER||USER.guest){toast('Bitte melde dich an um zu kommentieren');return;}
+  const inp=document.getElementById('cmt-inp-'+postId);
+  const text=(inp&&inp.value||'').trim();
+  if(!text)return;
+  const comment={who:CURRENT_USER,name:USER.name,color:USER.color,initials:USER.initials,text,time:'gerade eben',verified:USER.verified};
+  if(!POST_COMMENTS[postId])POST_COMMENTS[postId]=[];
+  const post=COMMUNITY.find(p=>String(p.id)===String(postId));
+  if(window.FB&&window.FB.ready){
+    try{
+      const {db,collection,addDoc,serverTimestamp}=window.FB;
+      // Only add to Firebase - onSnapshot will add it to local state
+      await addDoc(collection(db,'comments'),{postId,authorName:USER.name,authorColor:USER.color,authorInitials:USER.initials,text,created:serverTimestamp()});
+      // Don't add locally - onSnapshot handles it
+    }catch(e){
+      console.error(e);
+      // Firebase failed: add locally only
+      POST_COMMENTS[postId].push(comment);
+      if(post)post.comments=(post.comments||0)+1;
+    }
+  } else {
+    // No Firebase: add locally
+    POST_COMMENTS[postId].push(comment);
+    if(post)post.comments=(post.comments||0)+1;
+  }
+  const post2=COMMUNITY.find(p=>String(p.id)===String(postId));
+  renderCommentsSheet(postId, post2||{body:'',id:postId});
+  renderFeed();
+}
+function deleteComment(postId, who, time){
+  if(!POST_COMMENTS[postId])return;
+  POST_COMMENTS[postId]=POST_COMMENTS[postId].filter(c=>!(c.who===who&&c.time.replace(/'/g,'')===time));
+  const post=COMMUNITY.find(p=>String(p.id)===String(postId));
+  if(post&&post.comments>0)post.comments--;
+  renderFeed();
+}
+// Load comments from Firebase
+function initCommentSync(){
+  if(!window.FB||!window.FB.ready)return;
+  const {db,collection,onSnapshot,query,orderBy}=window.FB;
+  try{
+    onSnapshot(query(collection(db,'comments'),orderBy('created','asc')),snap=>{
+      // Rebuild all comments fresh from Firestore on each update
+      const fresh={};
+      snap.forEach(d=>{
+        const c=d.data();
+        if(!fresh[c.postId])fresh[c.postId]=[];
+        fresh[c.postId].push({firestoreId:d.id,who:c.authorName,name:c.authorName,color:c.authorColor||'#2E7D32',initials:c.authorInitials||'?',text:c.text,time:'—'});
+      });
+      // Merge: keep seed comments, replace firestore ones
+      Object.keys(fresh).forEach(pid=>{
+        // Keep only non-firestore (seed) comments, add all fresh firestore ones
+        const seed=(POST_COMMENTS[pid]||[]).filter(c=>!c.firestoreId);
+        POST_COMMENTS[pid]=[...seed,...fresh[pid]];
+        const post=COMMUNITY.find(p=>String(p.id)===pid);
+        if(post)post.comments=POST_COMMENTS[pid].length;
+      });
+      renderFeed();
+    });
+  }catch(e){console.error('Comment sync error',e);}
+}
+window.addEventListener('fb-init-done', initCommentSync);
+
 function renderAll(){renderMapChips();renderFeed();renderRecs();renderIssues();renderOfficial();renderProfile();}
 </script>
 </body>
