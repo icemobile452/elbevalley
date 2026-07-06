@@ -1144,6 +1144,7 @@ function openCreatePost(){
 async function savePost(){
   const body=document.getElementById('cp-body').value.trim();
   if(!body){toast('Bitte schreibe etwas ✏️');return;}
+  if(containsBadWord(body)){toast('⚠️ Bitte respektvolle Sprache – Beitrag nicht gesendet.');return;}
   const anon=document.getElementById('cp-anon').checked;
   const post={anon,who:anon?'anon':'me',authorName:USER.name,authorColor:USER.color,verified:USER.verified,acct:anon?null:USER.acct,
     cat:document.getElementById('cp-cat').value,body,img:false,likes:0,comments:0,time:'gerade eben'};
@@ -1368,113 +1369,268 @@ function toast(msg){const t=document.getElementById('toast');t.innerHTML=msg;t.c
 function shade(hex){const n=parseInt(hex.slice(1),16);let r=(n>>16)-30,g=((n>>8)&255)-30,b=(n&255)-30;r=Math.max(0,r);g=Math.max(0,g);b=Math.max(0,b);return'#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');}
 
 /* ============ COMMENTS ============ */
-const POST_COMMENTS = {};
-// Seed some comments for demo posts
-POST_COMMENTS['sc1']=[
-  {who:'tom',name:'Tom Herzog',color:'#1976D2',initials:'TH',text:'Super Idee! Ich bin dabei, fahre samstags eh durch.',time:'vor 1 Std'},
-  {who:'petra',name:'Petra Wolf',color:'#5E35B1',initials:'PW',text:'Ich würde auch gerne mitfahren! Wo genau startet ihr?',time:'vor 45 Min'},
-];
-POST_COMMENTS['sc2']=[
-  {who:'maria',name:'Maria Kessler',color:'#C2185B',initials:'MK',text:'Wunderschön! Dieser Sonnenuntergang war wirklich magisch 🌅',time:'vor 3 Std'},
-  {who:'lena',name:'Lena Brandt',color:'#1565C0',initials:'LB',text:'Das nächste Mal unbedingt bescheid geben! Will dabei sein.',time:'vor 2 Std'},
-];
-POST_COMMENTS['sc4']=[
-  {who:'bernd',name:'Bernd Stahl',color:'#3949AB',initials:'BS',text:'Ich singe Bariton, wäre das was für euren Chor?',time:'gestern'},
+/* ============================================================
+   KOMMENTAR-SYSTEM  –  komplett neu, stabil
+   Jeder Kommentar hat eine lokale localId (uuid-ähnlich).
+   Gelöschte IDs werden in DELETED_COMMENT_IDS gespeichert,
+   damit onSnapshot sie nicht wiederherstellt.
+   ============================================================ */
+
+// Schimpfwort / Hassrede Filter (Deutsch + Englisch)
+const BAD_WORDS = [
+  // Deutsch – Schimpfwörter
+  'scheiß','scheiße','scheisse','scheiss',
+  'fick','ficken','gefickt','verpiss','verpisst',
+  'wichser','wichsen','gewichst',
+  'arsch','arschloch','arschgeige','arschkriecher',
+  'hurensohn','hurensöhne','hure','nutte','schlampe',
+  'idiot','vollidiot','blödmann','blödarsch','depp','trottel','versager','loser','loser',
+  'kacke','kackst','kack',
+  'miststück','mistkerl','dreckau',
+  // Rassismus / Hass DE
+  'nazi','nazis','neger','nigger','kanake','kanaken','judensau','judenscheiß',
+  'ausländer raus','türkensau','islamist',
+  'rassist','rassismus',
+  // Gewalt / Bedrohung DE
+  'töten','umbringen','abstechen','erschießen','vergewaltigen',
+  'terrorist','terrorismus','bombe','anschlag',
+  // Englisch – Schimpfwörter
+  'fuck','fucking','fucked','fucker','fck',
+  'shit','bullshit',
+  'bitch','bitches',
+  'asshole','ass hole',
+  'bastard',
+  'cunt',
+  'dick','dickhead',
+  'piss','pissed',
+  'crap',
+  'damn','dammit',
+  'hell','wtf',
+  // Rassismus / Hass EN
+  'nigger','nigga','chink','spic','kike','faggot','dyke',
+  'hate','racist','racism','white power','nazi',
+  // Gewalt / Bedrohung EN
+  'kill','murder','rape','shoot','stab','bomb','terror','attack',
 ];
 
-async function openComments(postId){
+function containsBadWord(text){
+  function norm(s){
+    return s.toLowerCase()
+      .replace(/0/g,'o').replace(/1/g,'i').replace(/3/g,'e')
+      .replace(/4/g,'a').replace(/5/g,'s').replace(/\$/g,'s')
+      .replace(/8/g,'b').replace(/@/g,'a')
+      .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue')
+      .replace(/ß/g,'ss');
+  }
+  const t = norm(text);
+  // Version 1: alles außer Buchstaben/Zahlen durch Leerzeichen
+  const tClean = t.replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+  // Version 2: komplett ohne Sonderzeichen (fängt "A r s c h" und Leerzeichen-Tricks)
+  const tStripped = t.replace(/[^a-z0-9]/g,'');
+
+  return BAD_WORDS.some(w => {
+    const wn = norm(w);
+    if(tClean.includes(wn) || t.includes(wn) || tStripped.includes(wn)) return true;
+    // Wildcard-Erkennung: erste 2 + letzte 1 Zeichen prüfen bei Wörtern ab 4 Zeichen
+    // z.B. "n****r" → erster Buchstabe 'n', letzter 'r', Länge 6 → passt zu 'nigger'
+    if(wn.length >= 4){
+      // Finde potenzielle Wörter im Text (getrennt durch Leerzeichen oder Sonderzeichen)
+      const tokens = t.split(/[\s\*\-\_\.\,\!\?\#\@]+/).filter(x=>x.length>0);
+      for(const tok of tokens){
+        const tokStripped = tok.replace(/[^a-z0-9]/g,'');
+        if(tokStripped.length < 2) continue;
+        // Erster Buchstabe und letzter stimmen überein, ähnliche Länge
+        if(tokStripped[0]===wn[0] && tokStripped[tokStripped.length-1]===wn[wn.length-1]
+           && Math.abs(tokStripped.length - wn.length) <= 2){
+          return true;
+        }
+        // Auch: Wort fängt mit den ersten 3 Buchstaben des Schlüsselworts an
+        if(wn.length>=3 && tokStripped.startsWith(wn.slice(0,3)) && tokStripped.length >= wn.length-1){
+          return true;
+        }
+      }
+    }
+    return false;
+  });
+}
+
+// Einfache lokale ID
+function makeLocalId(){ return 'lc_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
+
+// Haupt-Speicher: { [postId]: [ {localId, firestoreId?, who, name, color, initials, text, time, verified} ] }
+const POST_COMMENTS = {
+  'sc1':[
+    {localId:'seed_sc1_1',who:'tom',name:'Tom Herzog',color:'#1976D2',initials:'TH',text:'Super Idee! Ich bin dabei, fahre samstags eh durch.',time:'vor 1 Std'},
+    {localId:'seed_sc1_2',who:'petra',name:'Petra Wolf',color:'#5E35B1',initials:'PW',text:'Ich würde auch gerne mitfahren! Wo genau startet ihr?',time:'vor 45 Min'},
+  ],
+  'sc2':[
+    {localId:'seed_sc2_1',who:'maria',name:'Maria Kessler',color:'#C2185B',initials:'MK',text:'Wunderschön! Dieser Sonnenuntergang war wirklich magisch 🌅',time:'vor 3 Std'},
+    {localId:'seed_sc2_2',who:'lena',name:'Lena Brandt',color:'#2E7D32',initials:'LB',text:'Das nächste Mal unbedingt bescheid geben! Will dabei sein.',time:'vor 2 Std'},
+  ],
+  'sc4':[
+    {localId:'seed_sc4_1',who:'bernd',name:'Bernd Stahl',color:'#3949AB',initials:'BS',text:'Ich singe Bariton, wäre das was für euren Chor?',time:'gestern'},
+  ],
+};
+// IDs die lokal gelöscht wurden – onSnapshot ignoriert diese
+const DELETED_COMMENT_IDS = new Set();
+// Aktuelle postId die im Sheet offen ist
+let _openCommentPostId = null;
+
+function _syncCommentCount(postId){
   const post = COMMUNITY.find(p=>String(p.id)===String(postId));
-  if(!post)return;
+  if(post) post.comments = (POST_COMMENTS[postId]||[]).length;
+}
+
+function openComments(postId){
+  const post = COMMUNITY.find(p=>String(p.id)===String(postId));
+  if(!post) return;
   if(!POST_COMMENTS[postId]) POST_COMMENTS[postId]=[];
+  _openCommentPostId = postId;
   renderCommentsSheet(postId, post);
 }
+
 function renderCommentsSheet(postId, post){
   const comments = POST_COMMENTS[postId]||[];
+  const canDelete = (c) => USER && (isAdmin || c.who === CURRENT_USER);
   const commentsHtml = comments.length===0
     ? '<div style="text-align:center;padding:30px;color:var(--muted)"><span class="ms" style="font-size:36px;display:block;opacity:.4">chat_bubble</span>Noch keine Kommentare. Sei der Erste!</div>'
     : comments.map(c=>`
-        <div class="comment">
+        <div class="comment" id="cmt-${c.localId}">
           <div class="comment-avatar" style="background:${c.color}">${c.initials}</div>
           <div class="comment-body">
             <div class="comment-name">${c.name}${c.verified?'<span class="ms" style="font-size:14px;color:var(--green)">verified</span>':''}</div>
             <div class="comment-text">${c.text}</div>
             <div class="comment-time">${c.time}</div>
           </div>
-          ${(USER&&(isAdmin||(c.who===CURRENT_USER)))?`<button onclick="deleteComment('${postId}','${c.who}','${c.time.replace(/'/g,'')}');renderCommentsSheet('${postId}',COMMUNITY.find(p=>String(p.id)==='${postId}'))" style="background:none;border:none;color:#E53935;cursor:pointer;align-self:flex-start"><span class="ms" style="font-size:18px">delete</span></button>`:''}
+          ${canDelete(c)?`<button onclick="deleteComment('${postId}','${c.localId}','${c.firestoreId||''}')" style="background:none;border:none;color:#E53935;cursor:pointer;align-self:flex-start;padding:4px"><span class="ms" style="font-size:20px">delete</span></button>`:''}
         </div>`).join('');
   showSheet(`
     <div class="sheet-handle"></div>
     <div style="padding:14px 18px 10px;border-bottom:1px solid var(--line)">
       <div style="font-weight:800;font-size:18px">Kommentare</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:2px">${post.body.substring(0,60)}${post.body.length>60?'…':''}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">${(post.body||'').substring(0,60)}${(post.body||'').length>60?'…':''}</div>
     </div>
-    <div style="padding:0 18px;flex:1">${commentsHtml}</div>
+    <div style="padding:0 18px 100px">${commentsHtml}</div>
     <div class="comment-input-wrap">
       <div class="comment-avatar" style="background:${USER?USER.color:'#90A4AE'}">${USER?USER.initials:'G'}</div>
       <input id="cmt-inp-${postId}" placeholder="Kommentar schreiben…" onkeydown="if(event.key==='Enter')submitComment('${postId}')">
       <button class="comment-send" onclick="submitComment('${postId}')"><span class="ms">send</span></button>
     </div>`);
 }
+
 async function submitComment(postId){
   if(!USER||USER.guest){toast('Bitte melde dich an um zu kommentieren');return;}
-  const inp=document.getElementById('cmt-inp-'+postId);
-  const text=(inp&&inp.value||'').trim();
-  if(!text)return;
-  const comment={who:CURRENT_USER,name:USER.name,color:USER.color,initials:USER.initials,text,time:'gerade eben',verified:USER.verified};
-  if(!POST_COMMENTS[postId])POST_COMMENTS[postId]=[];
-  const post=COMMUNITY.find(p=>String(p.id)===String(postId));
-  if(window.FB&&window.FB.ready){
+  const inp = document.getElementById('cmt-inp-'+postId);
+  const text = (inp&&inp.value||'').trim();
+  if(!text) return;
+
+  // Inhaltsfilter
+  if(containsBadWord(text)){
+    toast('⚠️ Bitte respektvolle Sprache verwenden – Kommentar nicht gesendet.');
+    return;
+  }
+
+  const localId = makeLocalId();
+  const comment = {
+    localId, who: CURRENT_USER, name: USER.name,
+    color: USER.color, initials: USER.initials,
+    text, time: 'gerade eben', verified: USER.verified||false
+  };
+
+  if(!POST_COMMENTS[postId]) POST_COMMENTS[postId]=[];
+
+  if(window.FB && window.FB.ready){
     try{
-      const {db,collection,addDoc,serverTimestamp}=window.FB;
-      // Only add to Firebase - onSnapshot will add it to local state
-      await addDoc(collection(db,'comments'),{postId,authorName:USER.name,authorColor:USER.color,authorInitials:USER.initials,text,created:serverTimestamp()});
-      // Don't add locally - onSnapshot handles it
-    }catch(e){
-      console.error(e);
-      // Firebase failed: add locally only
+      const {db, collection, addDoc, serverTimestamp} = window.FB;
+      const docRef = await addDoc(collection(db,'comments'), {
+        postId, localId,
+        authorName: USER.name, authorColor: USER.color,
+        authorInitials: USER.initials, authorWho: CURRENT_USER,
+        text, created: serverTimestamp()
+      });
+      // Mark with firestoreId so onSnapshot knows it already exists
+      comment.firestoreId = docRef.id;
+      // Add locally immediately (onSnapshot will see it but skip if firestoreId already known)
       POST_COMMENTS[postId].push(comment);
-      if(post)post.comments=(post.comments||0)+1;
+    } catch(e){
+      console.error(e);
+      POST_COMMENTS[postId].push(comment);
     }
   } else {
-    // No Firebase: add locally
     POST_COMMENTS[postId].push(comment);
-    if(post)post.comments=(post.comments||0)+1;
   }
-  const post2=COMMUNITY.find(p=>String(p.id)===String(postId));
-  renderCommentsSheet(postId, post2||{body:'',id:postId});
+
+  _syncCommentCount(postId);
+  const post = COMMUNITY.find(p=>String(p.id)===String(postId));
+  renderCommentsSheet(postId, post||{body:'',id:postId});
   renderFeed();
 }
-function deleteComment(postId, who, time){
-  if(!POST_COMMENTS[postId])return;
-  POST_COMMENTS[postId]=POST_COMMENTS[postId].filter(c=>!(c.who===who&&c.time.replace(/'/g,'')===time));
-  const post=COMMUNITY.find(p=>String(p.id)===String(postId));
-  if(post&&post.comments>0)post.comments--;
+
+async function deleteComment(postId, localId, firestoreId){
+  if(!POST_COMMENTS[postId]) return;
+  // Remove locally
+  POST_COMMENTS[postId] = POST_COMMENTS[postId].filter(c=>c.localId!==localId);
+  // Remember deleted ID so onSnapshot doesn't restore it
+  DELETED_COMMENT_IDS.add(localId);
+  if(firestoreId) DELETED_COMMENT_IDS.add(firestoreId);
+  // Delete from Firebase if possible
+  if(firestoreId && window.FB && window.FB.ready){
+    try{
+      const {db, doc} = window.FB;
+      const {deleteDoc} = await import("https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js");
+      await deleteDoc(doc(db,'comments',firestoreId));
+    } catch(e){ console.error(e); }
+  }
+  _syncCommentCount(postId);
+  const post = COMMUNITY.find(p=>String(p.id)===String(postId));
+  renderCommentsSheet(postId, post||{body:'',id:postId});
   renderFeed();
 }
-// Load comments from Firebase
+
 function initCommentSync(){
-  if(!window.FB||!window.FB.ready)return;
-  const {db,collection,onSnapshot,query,orderBy}=window.FB;
+  if(!window.FB||!window.FB.ready) return;
+  const {db, collection, onSnapshot, query, orderBy} = window.FB;
+  // Set of firestoreIds we already have locally (to avoid duplicates)
+  const knownFirestoreIds = new Set();
   try{
-    onSnapshot(query(collection(db,'comments'),orderBy('created','asc')),snap=>{
-      // Rebuild all comments fresh from Firestore on each update
-      const fresh={};
+    onSnapshot(query(collection(db,'comments'),orderBy('created','asc')), snap=>{
       snap.forEach(d=>{
-        const c=d.data();
-        if(!fresh[c.postId])fresh[c.postId]=[];
-        fresh[c.postId].push({firestoreId:d.id,who:c.authorName,name:c.authorName,color:c.authorColor||'#2E7D32',initials:c.authorInitials||'?',text:c.text,time:'—'});
+        const fid = d.id;
+        const c = d.data();
+        const lid = c.localId || fid;
+        // Skip if deleted
+        if(DELETED_COMMENT_IDS.has(fid) || DELETED_COMMENT_IDS.has(lid)) return;
+        // Skip if already known (already added locally with this firestoreId)
+        if(knownFirestoreIds.has(fid)) return;
+        const pid = c.postId;
+        if(!POST_COMMENTS[pid]) POST_COMMENTS[pid]=[];
+        // Check if we already have this comment locally (by localId or firestoreId)
+        const alreadyHave = POST_COMMENTS[pid].some(x=>
+          x.firestoreId===fid || x.localId===lid
+        );
+        if(!alreadyHave){
+          POST_COMMENTS[pid].push({
+            localId: lid, firestoreId: fid,
+            who: c.authorWho||c.authorName, name: c.authorName,
+            color: c.authorColor||'#2E7D32', initials: c.authorInitials||'?',
+            text: c.text, time: '—', verified: false
+          });
+          _syncCommentCount(pid);
+        } else {
+          // Make sure firestoreId is set on existing entry
+          const existing = POST_COMMENTS[pid].find(x=>x.localId===lid);
+          if(existing && !existing.firestoreId) existing.firestoreId = fid;
+        }
+        knownFirestoreIds.add(fid);
       });
-      // Merge: keep seed comments, replace firestore ones
-      Object.keys(fresh).forEach(pid=>{
-        // Keep only non-firestore (seed) comments, add all fresh firestore ones
-        const seed=(POST_COMMENTS[pid]||[]).filter(c=>!c.firestoreId);
-        POST_COMMENTS[pid]=[...seed,...fresh[pid]];
-        const post=COMMUNITY.find(p=>String(p.id)===pid);
-        if(post)post.comments=POST_COMMENTS[pid].length;
-      });
+      // If comment sheet is open, refresh it
+      if(_openCommentPostId){
+        const post = COMMUNITY.find(p=>String(p.id)===String(_openCommentPostId));
+        if(post) renderCommentsSheet(_openCommentPostId, post);
+      }
       renderFeed();
     });
-  }catch(e){console.error('Comment sync error',e);}
+  } catch(e){ console.error('Comment sync error', e); }
 }
 window.addEventListener('fb-init-done', initCommentSync);
 
